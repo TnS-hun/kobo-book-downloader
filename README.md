@@ -32,7 +32,7 @@ To download a book:
 ```
 python kobo-book-downloader get /dir/book.epub 01234567-89ab-cdef-0123-456789abcdef
 ```
-To download book and name the file automatically:
+To download a book and name the file automatically:
 ```
 python kobo-book-downloader get /dir/ 01234567-89ab-cdef-0123-456789abcdef
 ```
