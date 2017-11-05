@@ -21,28 +21,37 @@ It has been tested on Linux but it should work on other platforms too.
 ## Usage
 
 To list your unread books:
-```python kobo-book-downloader list```
-
+```
+python kobo-book-downloader list
+```
 To list all your books:
-```python kobo-book-downloader list --all`
-
+```
+python kobo-book-downloader list --all
+```
 To download a book:
-```python kobo-book-downloader get /dir/book.epub 01234567-89ab-cdef-0123-456789abcdef```
-
+```
+python kobo-book-downloader get /dir/book.epub 01234567-89ab-cdef-0123-456789abcdef
+```
 To download book and name the file automatically:
-```python kobo-book-downloader get /dir/ 01234567-89ab-cdef-0123-456789abcdef```
-
+```
+python kobo-book-downloader get /dir/ 01234567-89ab-cdef-0123-456789abcdef
+```
 To download all your books:
-```python kobo-book-downloader get /dir/ --all```
-
+```
+python kobo-book-downloader get /dir/ --all
+```
 To show the location of the program's configuration file:
-```python kobo-book-downloader info```
-
+```
+python kobo-book-downloader info
+```
 Running the program without any arguments will show the help:
-```python kobo-book-downloader```
-
+```
+python kobo-book-downloader
+```
 To get additional help for the **list** command (it works for **get** too):
-```python kobo-book-downloader list --help```
+```
+python kobo-book-downloader list --help
+```
 
 ## Notes
 
