@@ -237,7 +237,10 @@ class Kobo:
 	def __GetDownloadInfo( productId: str, contentAccessBookResponse: dict ) -> Tuple[ str, bool ]:
 		jsonContentUrls = contentAccessBookResponse.get( "ContentUrls" )
 		if jsonContentUrls is None:
-			raise KoboException( "Content URL can't be found for product '%s'." % productId )
+			raise KoboException( "Download URL can't be found for product '%s'." % productId )
+
+		if len( jsonContentUrls ) == 0:
+			raise KoboException( "Download URL list is empty for product '%s'. If this is an archived book then it must be unarchived first on the Kobo website (https://www.kobo.com/help/en-US/article/1799/restoring-deleted-books-or-magazines)." % productId )
 
 		for jsonContentUrl in jsonContentUrls:
 			if ( jsonContentUrl[ "DRMType" ] == "KDRM" or jsonContentUrl[ "DRMType" ] == "SignedNoDrm" ) and \
@@ -254,6 +257,8 @@ class Kobo:
 			for chunk in response.iter_content( chunk_size = 1024 * 256 ):
 				f.write( chunk )
 
+	# Downloading archived books is not possible, the "content_access_book" API endpoint returns with empty ContentKeys
+	# and ContentUrls for them.
 	def Download( self, productId: str, displayProfile: str, outputPath: str ) -> None:
 		jsonResponse = self.__GetContentAccessBook( productId, displayProfile )
 		contentKeys = Kobo.__GetContentKeys( jsonResponse )

@@ -86,6 +86,18 @@ Examples:
 		return fileName
 
 	@staticmethod
+	def __IsBookArchived( newEntitlement: dict ) -> bool:
+		bookEntitlement = newEntitlement.get( "BookEntitlement" )
+		if bookEntitlement is None:
+			return False
+
+		isRemoved = bookEntitlement.get( "IsRemoved" )
+		if isRemoved is None:
+			return False
+
+		return isRemoved
+
+	@staticmethod
 	def __GetBook( revisionId: str, outputPath: str ) -> None:
 		if os.path.isdir( outputPath ):
 			book = Globals.Kobo.GetBookInfo( revisionId )
@@ -114,6 +126,16 @@ Examples:
 			bookMetadata = newEntitlement[ "BookMetadata" ]
 			fileName = Commands.__MakeFileNameForBook( bookMetadata )
 			outputFilePath = os.path.join( outputPath, fileName )
+
+			# Skip archived books.
+			if Commands.__IsBookArchived( newEntitlement ):
+				title = bookMetadata[ "Title" ]
+				author = Commands.__GetBookAuthor( bookMetadata )
+				if len( author ) > 0:
+					title += " by " + author
+
+				print( colorama.Fore.LIGHTYELLOW_EX + ( "Skipping archived book %s." % title ) + colorama.Fore.RESET )
+				continue
 
 			print( "Downloading book to '%s'." % outputFilePath )
 			Globals.Kobo.Download( bookMetadata[ "RevisionId" ], Kobo.DisplayProfile, outputFilePath )
@@ -162,18 +184,26 @@ Examples:
 				continue
 
 			bookMetadata = newEntitlement[ "BookMetadata" ]
-			rows.append( [ bookMetadata[ "RevisionId" ], bookMetadata[ "Title" ], Commands.__GetBookAuthor( bookMetadata ) ] )
+			book = [ bookMetadata[ "RevisionId" ],
+				bookMetadata[ "Title" ],
+				Commands.__GetBookAuthor( bookMetadata ),
+				Commands.__IsBookArchived( newEntitlement ) ]
+			rows.append( book )
 
 		rows = sorted( rows, key = lambda columns: columns[ 1 ] )
 		for columns in rows:
 			revisionId = colorama.Style.DIM + columns[ 0 ] + colorama.Style.RESET_ALL
 			title = colorama.Style.BRIGHT + columns[ 1 ] + colorama.Style.RESET_ALL
-			author = columns[ 2 ]
 
+			author = columns[ 2 ]
 			if len( author ) > 0:
-				print( "%s \t %s by %s" % ( revisionId, title, author ) )
-			else:
-				print( "%s \t %s" % ( revisionId, title ) )
+				title += " by " + author
+
+			archived = columns[ 3 ]
+			if archived:
+				title += colorama.Fore.LIGHTYELLOW_EX + " (archived)" + colorama.Fore.RESET
+
+			print( "%s \t %s" % ( revisionId, title ) )
 
 	@staticmethod
 	def Info():
