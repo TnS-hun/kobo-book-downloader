@@ -197,19 +197,39 @@ class Kobo:
 		jsonResponse = response.json()
 		return jsonResponse
 
-	def GetMyBookList( self ) -> dict:
-		# There is also "library_items" but that is paged and gives back less info (even with the embed=ProductMetadata
-		# query parameter set).
-
+	def __GetMyBookListPage( self, syncToken: str ) -> Tuple[ dict, str ]:
 		url = self.InitializationSettings[ "library_sync" ]
 		headers = Kobo.GetHeaderWithAccessToken()
 		hooks = Kobo.__GetReauthenticationHook()
+
+		if len( syncToken ) > 0:
+			headers[ "x-kobo-synctoken" ] = syncToken
 
 		response = Globals.Kobo.Session.get( url, headers = headers, hooks = hooks )
 		response.raise_for_status()
 		bookList = response.json()
 
-		return bookList
+		syncToken = ""
+		syncResult = response.headers.get( "x-kobo-sync" )
+		if syncResult == "continue":
+			syncToken = response.headers.get( "x-kobo-synctoken", "" )
+
+		return bookList, syncToken
+
+	def GetMyBookList( self ) -> dict:
+		# The "library_sync" name and the synchronization tokens make it somewhat suspicious that we should use
+		# "library_items" instead to get the My Books list, but "library_items" gives back less info (even with the
+		# embed=ProductMetadata query parameter set).
+
+		fullBookList = []
+		syncToken = ""
+		while True:
+			bookList, syncToken = self.__GetMyBookListPage( syncToken )
+			fullBookList += bookList
+			if len( syncToken ) == 0:
+				break
+
+		return fullBookList
 
 	def __GetContentAccessBook( self, productId: str, displayProfile: str ) -> dict:
 		url = self.InitializationSettings[ "content_access_book" ].replace( "{ProductId}", productId )
