@@ -190,7 +190,7 @@ Examples:
 				Commands.__IsBookArchived( newEntitlement ) ]
 			rows.append( book )
 
-		rows = sorted( rows, key = lambda columns: columns[ 1 ] )
+		rows = sorted( rows, key = lambda columns: columns[ 1 ].lower() )
 		for columns in rows:
 			revisionId = colorama.Style.DIM + columns[ 0 ] + colorama.Style.RESET_ALL
 			title = colorama.Style.BRIGHT + columns[ 1 ] + colorama.Style.RESET_ALL
