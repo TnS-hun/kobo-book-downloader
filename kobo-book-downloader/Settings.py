@@ -12,10 +12,10 @@ class Settings:
 
 		self.Load()
 
-	def AreAuthenticationSettingsSet( self ):
-		return len( self.DeviceId) > 0 and len( self.AccessToken ) > 0 and len( self.RefreshToken ) > 0
+	def AreAuthenticationSettingsSet( self ) -> bool:
+		return len( self.DeviceId ) > 0 and len( self.AccessToken ) > 0 and len( self.RefreshToken ) > 0
 
-	def IsLoggedIn( self ):
+	def IsLoggedIn( self ) -> bool:
 		return len( self.UserId ) > 0 and len( self.UserKey ) > 0
 
 	def Load( self ) -> None:

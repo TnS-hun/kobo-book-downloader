@@ -13,7 +13,7 @@ class KoboDrmRemover:
 		self.DeviceIdUserIdKey = KoboDrmRemover.__MakeDeviceIdUserIdKey( deviceId, userId )
 
 	@staticmethod
-	def __MakeDeviceIdUserIdKey( deviceId: str, userId: str ) -> str:
+	def __MakeDeviceIdUserIdKey( deviceId: str, userId: str ) -> bytes:
 		deviceIdUserId = ( deviceId + userId ).encode()
 		key = hashlib.sha256( deviceIdUserId ).hexdigest()
 		return binascii.a2b_hex( key[ 32: ] )
