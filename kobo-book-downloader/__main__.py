@@ -5,7 +5,7 @@ from Settings import Settings
 
 import argparse
 
-def Initialize():
+def Initialize() -> None:
 	Globals.Kobo = Kobo()
 	Globals.Settings = Settings()
 
@@ -17,7 +17,30 @@ def Initialize():
 	if not Globals.Settings.IsLoggedIn():
 		email = input( "Waiting for your input. You can use Shift+Insert to paste from the clipboard. Ctrl+C aborts the program.\n\nKobo e-mail: " )
 		password = input( "Kobo password: " )
-		Globals.Kobo.Login( email, password )
+
+		print( """
+Open https://authorize.kobo.com/signin in a private/incognito window in your browser, wait till the page
+loads (do not login!) then open the developer tools (use F12 in Firefox/Chrome), select the console tab,
+and paste the following code there and then press Enter there in the browser.
+
+var newCaptchaDiv = document.createElement( "div" );
+newCaptchaDiv.id = "new-grecaptcha-container";
+document.getElementById( "grecaptcha-container" ).insertAdjacentElement( "afterend", newCaptchaDiv );
+grecaptcha.render( newCaptchaDiv.id, {
+	sitekey: "6LeEbUwUAAAAADJxtlhMsvgnR7SsFpMm4sirr1CJ",
+	callback: function( response ) { console.log( "Captcha response:" ); console.log( response ); }
+} );
+
+A captcha should show up below the Sign-in form. Once you solve the captcha its response will be written
+below the pasted code in the browser's console. Copy the response (the line below "Captcha response:")
+and paste it here.
+""" )
+
+		captcha = input( "Captcha response: " ).strip()
+
+		print( "" )
+
+		Globals.Kobo.Login( email, password, captcha )
 
 def Main() -> None:
 	argumentParser = argparse.ArgumentParser( add_help = False )

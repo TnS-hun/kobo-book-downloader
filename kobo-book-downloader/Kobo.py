@@ -45,7 +45,7 @@ def ReauthenticationHook( r, *args, **kwargs ):
 
 class Kobo:
 	Affiliate = "Kobo"
-	ApplicationVersion = "7.1.21543"
+	ApplicationVersion = "8.11.24971"
 	DefaultPlatformId = "00000000-0000-0000-0000-000000004000"
 	DisplayProfile = "Android"
 
@@ -135,43 +135,50 @@ class Kobo:
 		jsonResponse = response.json()
 		self.InitializationSettings = jsonResponse[ "Resources" ]
 
-	def __GetAuthenticationUrlFromLoginPage( self ) -> str:
-		signInPageUrl = self.InitializationSettings[ "sign_in_page" ]
+	def __GetExtraLoginParameters( self ) -> Tuple[ str, str, str ]:
+		signInUrl = self.InitializationSettings[ "sign_in_page" ]
 
 		params = {
 			"wsa": Kobo.Affiliate,
-			"wscf": "kepub",
 			"pwsav": Kobo.ApplicationVersion,
 			"pwspid": Kobo.DefaultPlatformId,
 			"pwsdid": Globals.Settings.DeviceId
 		}
 
-		response = self.Session.get( signInPageUrl, params = params )
+		response = self.Session.get( signInUrl, params = params )
 		response.raise_for_status()
 		htmlResponse = response.text
 
-		match = re.search( r"""<form action="(/[^"]+/Authenticate\?[^"]+)" method="post">""", htmlResponse )
+		# The link can be found in the response ('<a class="kobo-link partner-option kobo"') but this will do for now.
+		parsed = urllib.parse.urlparse( signInUrl )
+		koboSignInUrl = parsed._replace( query = None, path = "/ww/en/signin/signin/kobo" ).geturl()
+
+		match = re.search( r'href="/ww/en/signin/signin/kobo\?workflowId=([^"]+)"', htmlResponse )
 		if match is None:
-			raise KoboException( "Can't find login form. The page format might have changed." )
+			raise KoboException( "Can't find the workflow ID in the login form. The page format might have changed." )
+		workflowId = html.unescape( match.group( 1 ) )
 
-		authenticationUrl = match.group( 1 )
-		authenticationUrl = html.unescape( authenticationUrl )
-		authenticationUrl = urllib.parse.urljoin( signInPageUrl, authenticationUrl )
-		return authenticationUrl
+		match = re.search( r"""<input name="__RequestVerificationToken" type="hidden" value="([^"]+)" />""", htmlResponse )
+		if match is None:
+			raise KoboException( "Can't find the request verification token in the login form. The page format might have changed." )
+		requestVerificationToken = html.unescape( match.group( 1 ) )
 
-	def Login( self, email: str, password: str ) -> None:
-		authenticationUrl = self.__GetAuthenticationUrlFromLoginPage()
+		return koboSignInUrl, workflowId, requestVerificationToken
+
+	def Login( self, email: str, password: str, captcha: str ) -> None:
+		signInUrl, workflowId, requestVerificationToken = self.__GetExtraLoginParameters()
 
 		postData = {
-			"EditModel.Email": email,
-			"EditModel.Password": password,
-			"EditModel.AuthenticationAction": "Authenticate",
-			"AffiliateObject.Name": Kobo.Affiliate,
-			"IsFTE": "False",
-			"RequireSharedToken": "False"
+			"LogInModel.WorkflowId": workflowId,
+			"LogInModel.Provider": Kobo.Affiliate,
+			"ReturnUrl": "",
+			"__RequestVerificationToken": requestVerificationToken,
+			"LogInModel.UserName": email,
+			"LogInModel.Password": password,
+			"g-recaptcha-response": captcha
 		}
 
-		response = self.Session.post( authenticationUrl, data = postData )
+		response = self.Session.post( signInUrl, data = postData )
 		response.raise_for_status()
 		htmlResponse = response.text
 
@@ -197,7 +204,7 @@ class Kobo:
 		jsonResponse = response.json()
 		return jsonResponse
 
-	def __GetMyBookListPage( self, syncToken: str ) -> Tuple[ dict, str ]:
+	def __GetMyBookListPage( self, syncToken: str ) -> Tuple[ list, str ]:
 		url = self.InitializationSettings[ "library_sync" ]
 		headers = Kobo.GetHeaderWithAccessToken()
 		hooks = Kobo.__GetReauthenticationHook()
@@ -216,7 +223,7 @@ class Kobo:
 
 		return bookList, syncToken
 
-	def GetMyBookList( self ) -> dict:
+	def GetMyBookList( self ) -> list:
 		# The "library_sync" name and the synchronization tokens make it somewhat suspicious that we should use
 		# "library_items" instead to get the My Books list, but "library_items" gives back less info (even with the
 		# embed=ProductMetadata query parameter set).
