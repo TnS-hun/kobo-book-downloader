@@ -275,7 +275,12 @@ class Kobo:
 				hasDrm = jsonContentUrl[ "DRMType" ] == "KDRM"
 				return jsonContentUrl[ "DownloadUrl" ], hasDrm
 
-		raise KoboException( "Download URL for supported formats can't be found for product '%s'." % productId )
+		message = "Download URL for supported formats can't be found for product '%s'.\n" % productId
+		message += "Available formats:"
+		for jsonContentUrl in jsonContentUrls:
+			message += "\nDRMType: '%s', UrlFormat: '%s'" % ( jsonContentUrl[ "DRMType" ], jsonContentUrl[ "UrlFormat" ] )
+
+		raise KoboException( message )
 
 	def __DownloadToFile( self, url, outputPath: str ) -> None:
 		response = self.Session.get( url, stream = True )
