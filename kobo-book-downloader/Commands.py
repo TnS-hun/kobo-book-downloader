@@ -27,6 +27,7 @@ Commands:
   get      Download book
   info     Show the location of the configuration file
   list     List your books
+  pick     Download books using interactive selection
 
 Optional arguments:
   -h, --help    Show this help message and exit
@@ -38,7 +39,9 @@ Examples:
   kobo-book-downloader info                                                      Show the location of the program's configuration file
   kobo-book-downloader list                                                      List your unread books
   kobo-book-downloader list --all                                                List all your books
-  kobo-book-downloader list --help                                               Get additional help for the list command (it works for get too)"""
+  kobo-book-downloader list --help                                               Get additional help for the list command (it works for get too)
+  kobo-book-downloader pick /dir/                                                Interactively select unread books to download 
+  kobo-book-downloader pick /dir/ --all                                          Interactively select books to download"""
 
 		print( usage )
 
@@ -169,9 +172,7 @@ Examples:
 		return status == "Finished"
 
 	@staticmethod
-	def ListBooks( listAll: bool ) -> None:
-		colorama.init()
-
+	def __GetBookList( listAll: bool ) -> list:
 		bookList = Globals.Kobo.GetMyBookList()
 		rows = []
 
@@ -191,6 +192,13 @@ Examples:
 			rows.append( book )
 
 		rows = sorted( rows, key = lambda columns: columns[ 1 ].lower() )
+		return rows
+
+	@staticmethod
+	def ListBooks( listAll: bool ) -> None:
+		colorama.init()
+
+		rows = Commands.__GetBookList( listAll )
 		for columns in rows:
 			revisionId = colorama.Style.DIM + columns[ 0 ] + colorama.Style.RESET_ALL
 			title = colorama.Style.BRIGHT + columns[ 1 ] + colorama.Style.RESET_ALL
@@ -204,6 +212,71 @@ Examples:
 				title += colorama.Fore.LIGHTYELLOW_EX + " (archived)" + colorama.Fore.RESET
 
 			print( "%s \t %s" % ( revisionId, title ) )
+
+	@staticmethod
+	def __ListBooksToPickFrom( rows: list ) -> None:
+		longestIndex = len( "%d" % len( rows ) )
+
+		for index, columns in enumerate( rows ):
+			alignedIndexText = str( index + 1 ).rjust( longestIndex, ' ' )
+
+			title = colorama.Style.BRIGHT + columns[ 1 ] + colorama.Style.RESET_ALL
+
+			author = columns[ 2 ]
+			if len( author ) > 0:
+				title += " by " + author
+
+			archived = columns[ 3 ]
+			if archived:
+				title += colorama.Fore.LIGHTYELLOW_EX + " (archived)" + colorama.Fore.RESET
+
+			print( "%s. %s" % ( alignedIndexText, title ) )
+
+	@staticmethod
+	def __GetPickedBookRows( rows: list ) -> list:
+		print( """\nEnter the number of the book(s) to download. Use comma or space to list multiple. Enter "all" to download all of them.""" )
+		indexText = input( "Books: " )
+
+		if indexText == "all":
+			return rows
+
+		indexList = indexText.replace( " ", "," ).split( "," )
+		rowsToDownload = []
+
+		for indexText in indexList:
+			try:
+				index = int( indexText.strip() ) - 1
+				if index >= 0 and index < len( rows ):
+					rowsToDownload.append( rows[ index ] )
+			except Exception:
+				pass
+
+		return rowsToDownload
+
+	@staticmethod
+	def __DownloadPickedBooks( outputPath: str, rows: list ) -> None:
+		for columns in rows:
+			revisionId = columns[ 0 ]
+			title = columns[ 1 ]
+			author = columns[ 2 ]
+			archived = columns[ 3 ]
+
+			if archived:
+				if len( author ) > 0:
+					title += " by " + author
+
+				print( colorama.Fore.LIGHTYELLOW_EX + ( "Skipping archived book %s." % title ) + colorama.Fore.RESET )
+			else:
+				Commands.GetBookOrBooks( revisionId, outputPath, False )
+
+	@staticmethod
+	def PickBooks( outputPath: str, listAll: bool ) -> None:
+		colorama.init()
+
+		rows = Commands.__GetBookList( listAll )
+		Commands.__ListBooksToPickFrom( rows )
+		rowsToDownload = Commands.__GetPickedBookRows( rows )
+		Commands.__DownloadPickedBooks( outputPath, rowsToDownload )
 
 	@staticmethod
 	def Info():

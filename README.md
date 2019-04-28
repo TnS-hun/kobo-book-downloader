@@ -20,6 +20,14 @@ It has been tested on Linux but it should work on other platforms too.
 
 ## Usage
 
+To interactively select from your unread books to download:
+```
+python kobo-book-downloader pick /dir/
+```
+To interactively select from all of your books to download:
+```
+python kobo-book-downloader pick /dir/ --all
+```
 To list your unread books:
 ```
 python kobo-book-downloader list
