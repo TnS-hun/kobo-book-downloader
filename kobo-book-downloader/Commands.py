@@ -181,6 +181,13 @@ Examples:
 			if newEntitlement is None:
 				continue
 
+			# Do not list books that cannot be downloaded.
+			bookEntitlement = newEntitlement.get( "BookEntitlement" )
+			if bookEntitlement is not None:
+				accessibility = bookEntitlement.get( "Accessibility" )
+				if ( accessibility is not None ) and accessibility != "Full":
+					continue
+
 			if ( not listAll ) and Commands.__IsBookRead( newEntitlement ):
 				continue
 
