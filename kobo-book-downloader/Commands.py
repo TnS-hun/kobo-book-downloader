@@ -181,11 +181,14 @@ Examples:
 			if newEntitlement is None:
 				continue
 
-			# Do not list books that cannot be downloaded.
 			bookEntitlement = newEntitlement.get( "BookEntitlement" )
 			if bookEntitlement is not None:
-				accessibility = bookEntitlement.get( "Accessibility" )
-				if ( accessibility is not None ) and accessibility != "Full":
+				# Skip saved previews.
+				if bookEntitlement.get( "Accessibility" ) == "Preview":
+					continue
+
+				# Skip refunded books.
+				if bookEntitlement.get( "IsLocked" ):
 					continue
 
 			if ( not listAll ) and Commands.__IsBookRead( newEntitlement ):
