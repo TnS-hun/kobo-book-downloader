@@ -238,6 +238,32 @@ class Kobo:
 
 		return fullBookList
 
+	def GetMyWishList( self ) -> list:
+		items = []
+		currentPageIndex = 0
+
+		while True:
+			url = self.InitializationSettings[ "user_wishlist" ]
+			headers = Kobo.GetHeaderWithAccessToken()
+			hooks = Kobo.__GetReauthenticationHook()
+
+			params = {
+				"PageIndex": currentPageIndex,
+				"PageSize": 100, # 100 is the default if PageSize is not specified.
+			}
+
+			response = Globals.Kobo.Session.get( url, params = params, headers = headers, hooks = hooks )
+			response.raise_for_status()
+			wishList = response.json()
+
+			items.extend( wishList[ "Items" ] )
+
+			currentPageIndex += 1
+			if currentPageIndex >= wishList[ "TotalPageCount" ]:
+				break
+
+		return items
+
 	def __GetContentAccessBook( self, productId: str, displayProfile: str ) -> dict:
 		url = self.InitializationSettings[ "content_access_book" ].replace( "{ProductId}", productId )
 		params = { "DisplayProfile": displayProfile }

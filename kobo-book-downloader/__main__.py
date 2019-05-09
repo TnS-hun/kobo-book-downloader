@@ -56,6 +56,7 @@ def Main() -> None:
 	pickParser = subparsers.add_parser( "pick", help = "Download books using interactive selection" )
 	pickParser.add_argument( "OutputPath", metavar = "output-path", help = "Output path must be an existing directory" )
 	pickParser.add_argument( "--all", default = False, action = "store_true", help = "List read books too" )
+	wishListParser = subparsers.add_parser( "wishlist", help = "List your wish listed books" )
 	arguments = argumentParser.parse_args()
 
 	if arguments.Command is None:
@@ -72,6 +73,8 @@ def Main() -> None:
 		Commands.ListBooks( arguments.all )
 	elif arguments.Command == "pick":
 		Commands.PickBooks( arguments.OutputPath, arguments.all )
+	elif arguments.Command == "wishlist":
+		Commands.ListWishListedBooks()
 
 
 if __name__ == '__main__':

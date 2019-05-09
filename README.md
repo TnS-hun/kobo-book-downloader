@@ -48,6 +48,10 @@ To download all your books:
 ```
 python kobo-book-downloader get /dir/ --all
 ```
+To list all your books from your wish list:
+```
+python kobo-book-downloader wishlist
+```
 To show the location of the program's configuration file:
 ```
 python kobo-book-downloader info
@@ -56,7 +60,7 @@ Running the program without any arguments will show the help:
 ```
 python kobo-book-downloader
 ```
-To get additional help for the **list** command (it works for **get** too):
+To get additional help for the **list** command (it works for **get** and **pick** too):
 ```
 python kobo-book-downloader list --help
 ```

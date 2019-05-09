@@ -28,6 +28,7 @@ Commands:
   info     Show the location of the configuration file
   list     List your books
   pick     Download books using interactive selection
+  wishlist List your wish listed books
 
 Optional arguments:
   -h, --help    Show this help message and exit
@@ -39,9 +40,10 @@ Examples:
   kobo-book-downloader info                                                      Show the location of the program's configuration file
   kobo-book-downloader list                                                      List your unread books
   kobo-book-downloader list --all                                                List all your books
-  kobo-book-downloader list --help                                               Get additional help for the list command (it works for get too)
-  kobo-book-downloader pick /dir/                                                Interactively select unread books to download 
-  kobo-book-downloader pick /dir/ --all                                          Interactively select books to download"""
+  kobo-book-downloader list --help                                               Get additional help for the list command (it works for get and pick too)
+  kobo-book-downloader pick /dir/                                                Interactively select unread books to download
+  kobo-book-downloader pick /dir/ --all                                          Interactively select books to download
+  kobo-book-downloader wishlist                                                  List your wish listed books"""
 
 		print( usage )
 
@@ -287,6 +289,35 @@ Examples:
 		Commands.__ListBooksToPickFrom( rows )
 		rowsToDownload = Commands.__GetPickedBookRows( rows )
 		Commands.__DownloadPickedBooks( outputPath, rowsToDownload )
+
+	@staticmethod
+	def ListWishListedBooks() -> None:
+		rows = []
+
+		wishList = Globals.Kobo.GetMyWishList()
+		for wishListEntry in wishList:
+			productMetadata = wishListEntry.get( "ProductMetadata" )
+			if productMetadata is None:
+				continue
+
+			book = productMetadata.get( "Book" )
+			if book is None:
+				continue
+
+			title = colorama.Style.BRIGHT + book[ "Title" ] + colorama.Style.RESET_ALL
+			author = Commands.__GetBookAuthor( book )
+			isbn = book.get( "ISBN", "" )
+
+			row = title
+			if len( author ) > 0:
+				row += " by " + author
+			if len( isbn ) > 0:
+				row += " (ISBN: %s)" % isbn
+
+			rows.append( row )
+
+		rows = sorted( rows, key = lambda row: row.lower() )
+		print( "\n".join( rows ) )
 
 	@staticmethod
 	def Info():
