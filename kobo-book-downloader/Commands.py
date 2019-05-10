@@ -292,6 +292,8 @@ Examples:
 
 	@staticmethod
 	def ListWishListedBooks() -> None:
+		colorama.init()
+
 		rows = []
 
 		wishList = Globals.Kobo.GetMyWishList()
