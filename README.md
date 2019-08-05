@@ -2,7 +2,7 @@
 
 With kobo-book-downloader you can download your purchased [Kobo](https://www.kobo.com/) books and remove the Digital Rights Management (DRM) protection from them. The resulting [EPUB](https://en.wikipedia.org/wiki/EPUB) files can be read with, amongst others, [KOReader](https://github.com/koreader/koreader).
 
-Unlike [obok.py](https://github.com/apprenticeharper/DeDRM_tools/blob/master/Other_Tools/Kobo/obok.py), kobo-book-downloader doesn't require any pre-downloading through a Kobo e-reader or application.
+Unlike [obok.py](https://github.com/apprenticeharper/DeDRM_tools/blob/master/contrib/Other_Tools/Kobo/obok.py), kobo-book-downloader doesn't require any pre-downloading through a Kobo e-reader or application.
 
 kobo-book-downloader is a command line program. It looks like this:
 
@@ -71,4 +71,4 @@ kobo-book-downloader will prompt for your [Kobo](https://www.kobo.com/) e-mail a
 
 The program was made out of frustration with my workflow (purchase book on Kobo, turn on WiFi on the router, exit from KOReader, start Nickel from the Kobo start menu, turn on WiFi on the Kobo e-reader, wait till the downloading and other syncing finishes, turn off the WiFi on the e-reader, turn off the WiFi on the router, connect the e-reader via USB, run obok.py, copy the book to the e-reader, power off the e-reader, start KOReader, and finally start reading).
 
-The DRM removal code is based on Physisticated's [obok.py](https://github.com/apprenticeharper/DeDRM_tools/blob/master/Other_Tools/Kobo/obok.py). Thank you!
+The DRM removal code is based on Physisticated's [obok.py](https://github.com/apprenticeharper/DeDRM_tools/blob/master/contrib/Other_Tools/Kobo/obok.py). Thank you!
