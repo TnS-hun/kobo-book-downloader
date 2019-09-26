@@ -193,15 +193,16 @@ Examples:
 				if bookEntitlement.get( "IsLocked" ):
 					continue
 
-			if ( not listAll ) and Commands.__IsBookRead( newEntitlement ):
-				continue
+				bookMetadata = newEntitlement["BookMetadata"]
+				book = [bookMetadata["RevisionId"],
+						bookMetadata["Title"],
+						Commands.__GetBookAuthor(bookMetadata),
+						Commands.__IsBookArchived(newEntitlement)]
 
-			bookMetadata = newEntitlement[ "BookMetadata" ]
-			book = [ bookMetadata[ "RevisionId" ],
-				bookMetadata[ "Title" ],
-				Commands.__GetBookAuthor( bookMetadata ),
-				Commands.__IsBookArchived( newEntitlement ) ]
-			rows.append( book )
+				if ( not listAll ) and Commands.__IsBookRead( newEntitlement ):
+					continue
+
+				rows.append( book )
 
 		rows = sorted( rows, key = lambda columns: columns[ 1 ].lower() )
 		return rows
