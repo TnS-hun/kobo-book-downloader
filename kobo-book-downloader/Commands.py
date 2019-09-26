@@ -128,7 +128,11 @@ Examples:
 			if newEntitlement is None:
 				continue
 
+			# Only process e-books, no audio-books etc.
 			bookMetadata = newEntitlement[ "BookMetadata" ]
+			if bookMetadata is None:
+				continue
+
 			fileName = Commands.__MakeFileNameForBook( bookMetadata )
 			outputFilePath = os.path.join( outputPath, fileName )
 
@@ -143,7 +147,8 @@ Examples:
 				continue
 
 			print( "Downloading book to '%s'." % outputFilePath )
-			Globals.Kobo.Download( bookMetadata[ "RevisionId" ], Kobo.DisplayProfile, outputFilePath )
+
+			Globals.Kobo.Download(bookMetadata["RevisionId"], Kobo.DisplayProfile, outputFilePath)
 
 	@staticmethod
 	def GetBookOrBooks( revisionId: str, outputPath: str, getAll: bool ) -> None:
@@ -193,15 +198,16 @@ Examples:
 				if bookEntitlement.get( "IsLocked" ):
 					continue
 
-			if ( not listAll ) and Commands.__IsBookRead( newEntitlement ):
-				continue
+				bookMetadata = newEntitlement["BookMetadata"]
+				book = [bookMetadata["RevisionId"],
+						bookMetadata["Title"],
+						Commands.__GetBookAuthor(bookMetadata),
+						Commands.__IsBookArchived(newEntitlement)]
 
-			bookMetadata = newEntitlement[ "BookMetadata" ]
-			book = [ bookMetadata[ "RevisionId" ],
-				bookMetadata[ "Title" ],
-				Commands.__GetBookAuthor( bookMetadata ),
-				Commands.__IsBookArchived( newEntitlement ) ]
-			rows.append( book )
+				if ( not listAll ) and Commands.__IsBookRead( newEntitlement ):
+					continue
+
+				rows.append( book )
 
 		rows = sorted( rows, key = lambda columns: columns[ 1 ].lower() )
 		return rows
