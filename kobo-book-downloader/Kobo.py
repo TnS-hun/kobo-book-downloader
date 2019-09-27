@@ -264,7 +264,7 @@ class Kobo:
 
 		return items
 
-	def __GetContentAccessBook( self, productId: str, displayProfile: str ) -> dict:
+	def __GetContentAccessBook( self, productId: str, bookMetadata: str, displayProfile: str ) -> dict:
 		url = self.InitializationSettings[ "content_access_book" ].replace( "{ProductId}", productId )
 		params = { "DisplayProfile": displayProfile }
 		headers = Kobo.GetHeaderWithAccessToken()
@@ -288,7 +288,7 @@ class Kobo:
 
 	@staticmethod
 	def __GetDownloadInfo( productId: str, contentAccessBookResponse: dict ) -> Tuple[ str, bool ]:
-		jsonContentUrls = contentAccessBookResponse.get( "ContentUrls" )
+		jsonContentUrls = contentAccessBookResponse.get("ContentUrls")
 		if jsonContentUrls is None:
 			raise KoboException( "Download URL can't be found for product '%s'." % productId )
 
@@ -296,10 +296,9 @@ class Kobo:
 			raise KoboException( "Download URL list is empty for product '%s'. If this is an archived book then it must be unarchived first on the Kobo website (https://www.kobo.com/help/en-US/article/1799/restoring-deleted-books-or-magazines)." % productId )
 
 		for jsonContentUrl in jsonContentUrls:
-			if ( jsonContentUrl[ "DRMType" ] == "KDRM" or jsonContentUrl[ "DRMType" ] == "SignedNoDrm" ) and \
-				( jsonContentUrl[ "UrlFormat" ] == "EPUB3" or jsonContentUrl[ "UrlFormat" ] == "KEPUB" ):
-				hasDrm = jsonContentUrl[ "DRMType" ] == "KDRM"
-				return jsonContentUrl[ "DownloadUrl" ], hasDrm
+			if	jsonContentUrl[ "DrmType" ] == "SocialDrm" and (jsonContentUrl["Format"] == "WATERMARK"):
+				hasDrm = False
+				return jsonContentUrl["Url"], hasDrm
 
 		message = "Download URL for supported formats can't be found for product '%s'.\n" % productId
 		message += "Available formats:"
@@ -317,26 +316,37 @@ class Kobo:
 
 	# Downloading archived books is not possible, the "content_access_book" API endpoint returns with empty ContentKeys
 	# and ContentUrls for them.
-	def Download( self, productId: str, displayProfile: str, outputPath: str ) -> None:
-		jsonResponse = self.__GetContentAccessBook( productId, displayProfile )
-		contentKeys = Kobo.__GetContentKeys( jsonResponse )
-		downloadUrl, hasDrm = Kobo.__GetDownloadInfo( productId, jsonResponse )
+	def Download(self, productId: str, bookMetaData: str, displayProfile: str, outputPath: str) -> None:
+
+		# If the book has SocialDrm, its only watermarked and can be used on all devices you own.
+		# This download cannot be resolved when the client presents itself as 'Android'
+		downloadUrl = None
+		if bookMetaData is not None:
+			for book in bookMetaData:
+				if book["DrmType"] == "SocialDrm":
+					downloadUrl = book["Url"];
+					hasDrm = False
+
+		if downloadUrl is None:
+			jsonResponse = self.__GetContentAccessBook(productId, bookMetaData, displayProfile)
+			contentKeys = Kobo.__GetContentKeys(jsonResponse)
+			downloadUrl, hasDrm = Kobo.__GetDownloadInfo(productId, jsonResponse)
 
 		temporaryOutputPath = outputPath + ".downloading"
 
 		try:
-			self.__DownloadToFile( downloadUrl, temporaryOutputPath )
+			self.__DownloadToFile(downloadUrl, temporaryOutputPath)
 
 			if hasDrm:
-				drmRemover = KoboDrmRemover( Globals.Settings.DeviceId, Globals.Settings.UserId )
-				drmRemover.RemoveDrm( temporaryOutputPath, outputPath, contentKeys )
-				os.remove( temporaryOutputPath )
+				drmRemover = KoboDrmRemover(Globals.Settings.DeviceId, Globals.Settings.UserId)
+				drmRemover.RemoveDrm(temporaryOutputPath, outputPath, contentKeys)
+				os.remove(temporaryOutputPath)
 			else:
-				os.rename( temporaryOutputPath, outputPath )
+				os.rename(temporaryOutputPath, outputPath)
 		except:
-			if os.path.isfile( temporaryOutputPath ):
-				os.remove( temporaryOutputPath )
-			if os.path.isfile( outputPath ):
-				os.remove( outputPath )
+			if os.path.isfile(temporaryOutputPath):
+				os.remove(temporaryOutputPath)
+			if os.path.isfile(outputPath):
+				os.remove(outputPath)
 
 			raise
