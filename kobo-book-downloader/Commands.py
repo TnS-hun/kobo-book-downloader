@@ -114,7 +114,7 @@ Examples:
 				raise KoboException( "The parent directory ('%s') of the output file must exist." % parentPath )
 
 		print( "Downloading book to '%s'." % outputPath )
-		Globals.Kobo.Download( revisionId, Kobo.DisplayProfile, outputPath )
+		Globals.Kobo.Download( revisionId, None, Kobo.DisplayProfile, outputPath )
 
 	@staticmethod
 	def __GetAllBooks( outputPath: str ) -> None:
@@ -129,7 +129,7 @@ Examples:
 				continue
 
 			# Only process e-books, no audio-books etc.
-			bookMetadata = newEntitlement[ "BookMetadata" ]
+			bookMetadata = newEntitlement.get ( "BookMetadata" )
 			if bookMetadata is None:
 				continue
 
@@ -148,7 +148,7 @@ Examples:
 
 			print( "Downloading book to '%s'." % outputFilePath )
 
-			Globals.Kobo.Download(bookMetadata["RevisionId"], Kobo.DisplayProfile, outputFilePath)
+			Globals.Kobo.Download(bookMetadata["RevisionId"], bookMetadata["DownloadUrls"], Kobo.DisplayProfile, outputFilePath)
 
 	@staticmethod
 	def GetBookOrBooks( revisionId: str, outputPath: str, getAll: bool ) -> None:
