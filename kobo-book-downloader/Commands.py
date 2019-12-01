@@ -4,7 +4,7 @@ from Kobo import Kobo, KoboException
 import colorama
 
 import os
-
+import sys
 class Commands:
 	# It wasn't possible to format the main help message to my liking, so using a custom one.
 	# This was the most annoying:
@@ -91,21 +91,18 @@ Examples:
 		return fileName
 
 	@staticmethod
-	def __IsBookArchived( newEntitlement: dict ) -> bool:
-		bookEntitlement = newEntitlement.get( "BookEntitlement" )
-		if bookEntitlement is None:
-			return False
+	def __IsBookArchived(newEntitlement: dict) -> bool:
+		if 'BookEntitlement' in newEntitlement.keys():
+			bookEntitlement = newEntitlement['BookEntitlement']
+		if 'AudiobookEntitlement' in newEntitlement.keys():
+			bookEntitlement = newEntitlement['AudiobookEntitlement']
 
-		isRemoved = bookEntitlement.get( "IsRemoved" )
-		if isRemoved is None:
-			return False
-
-		return isRemoved
+		return bookEntitlement.get("IsRemoved", False)
 
 	@staticmethod
 	def __GetBook( revisionId: str, outputPath: str ) -> None:
 		if os.path.isdir( outputPath ):
-			book = Globals.Kobo.GetBookInfo( revisionId )
+			book = Globals.Kobo.GetBookInfo(revisionId)
 			fileName = Commands.__MakeFileNameForBook( book )
 			outputPath = os.path.join( outputPath, fileName )
 		else:
@@ -114,10 +111,20 @@ Examples:
 				raise KoboException( "The parent directory ('%s') of the output file must exist." % parentPath )
 
 		print( "Downloading book to '%s'." % outputPath )
-		Globals.Kobo.Download( revisionId, Kobo.DisplayProfile, outputPath )
+		Globals.Kobo.Download(revisionId, Kobo.DisplayProfile, outputPath)
+		
+	@staticmethod
+	def __GetBookMetadata(entitlement: dict) -> dict:
+		if 'BookMetadata' in entitlement.keys():
+			return entitlement['BookMetadata']
+		if 'AudiobookMetadata' in entitlement.keys():
+			return entitlement['AudiobookMetadata']
+
+		return None
+
 
 	@staticmethod
-	def __GetAllBooks( outputPath: str ) -> None:
+	def __GetAllBooks( outputPath: str, revisionId: str = None) -> None:
 		if not os.path.isdir( outputPath ):
 			raise KoboException( "The output path must be a directory when downloading all books." )
 
@@ -128,37 +135,29 @@ Examples:
 			if newEntitlement is None:
 				continue
 
-			bookMetadata = newEntitlement[ "BookMetadata" ]
-			fileName = Commands.__MakeFileNameForBook( bookMetadata )
-			outputFilePath = os.path.join( outputPath, fileName )
+			bookMetadata = Commands.__GetBookMetadata(newEntitlement)
+			isAudiobook = 'Duration' in bookMetadata.keys()
+			title = bookMetadata[ "Title" ]
+			author = Commands.__GetBookAuthor(bookMetadata)
+			if len( author ) > 0:
+				title += " by " + author
+
+			# skip if book's revisionId doens't match our desired Id
+			if revisionId and revisionId != bookMetadata.get('RevisionId'):
+				# print( colorama.Fore.LIGHTYELLOW_EX + ( "Skipping undesired book %s." % title ) + colorama.Fore.RESET )
+				continue
 
 			# Skip archived books.
 			if Commands.__IsBookArchived( newEntitlement ):
-				title = bookMetadata[ "Title" ]
-				author = Commands.__GetBookAuthor( bookMetadata )
-				if len( author ) > 0:
-					title += " by " + author
-
 				print( colorama.Fore.LIGHTYELLOW_EX + ( "Skipping archived book %s." % title ) + colorama.Fore.RESET )
 				continue
 
-			print( "Downloading book to '%s'." % outputFilePath )
-			Globals.Kobo.Download( bookMetadata[ "RevisionId" ], Kobo.DisplayProfile, outputFilePath )
+			print("Downloading %s..." % title)
+			Globals.Kobo.Download(bookMetadata, isAudiobook, os.path.join(outputPath, title))
 
 	@staticmethod
-	def GetBookOrBooks( revisionId: str, outputPath: str, getAll: bool ) -> None:
-		revisionIdIsSet = ( revisionId is not None ) and len( revisionId ) > 0
-
-		if getAll:
-			if revisionIdIsSet:
-				raise KoboException( "Got unexpected book identifier parameter ('%s')." % revisionId )
-
-			Commands.__GetAllBooks( outputPath )
-		else:
-			if not revisionIdIsSet:
-				raise KoboException( "Missing book identifier parameter. Did you mean to use the --all parameter?" )
-
-			Commands.__GetBook( revisionId, outputPath )
+	def GetBookOrBooks(outputPath: str, revisionId: str = None) -> None:
+		Commands.__GetAllBooks(outputPath, revisionId)
 
 	@staticmethod
 	def __IsBookRead( newEntitlement: dict ) -> bool:
@@ -196,7 +195,8 @@ Examples:
 			if ( not listAll ) and Commands.__IsBookRead( newEntitlement ):
 				continue
 
-			bookMetadata = newEntitlement[ "BookMetadata" ]
+			bookMetadata = Commands.__GetBookMetadata(newEntitlement)
+
 			book = [ bookMetadata[ "RevisionId" ],
 				bookMetadata[ "Title" ],
 				Commands.__GetBookAuthor( bookMetadata ),
@@ -279,7 +279,7 @@ Examples:
 
 				print( colorama.Fore.LIGHTYELLOW_EX + ( "Skipping archived book %s." % title ) + colorama.Fore.RESET )
 			else:
-				Commands.GetBookOrBooks( revisionId, outputPath, False )
+				Commands.GetBookOrBooks(outputPath, revisionId)
 
 	@staticmethod
 	def PickBooks( outputPath: str, listAll: bool ) -> None:

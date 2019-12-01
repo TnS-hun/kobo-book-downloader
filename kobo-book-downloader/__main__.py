@@ -66,7 +66,7 @@ def Main() -> None:
 	Initialize()
 
 	if arguments.Command == "get":
-		Commands.GetBookOrBooks( arguments.RevisionId, arguments.OutputPath, arguments.all )
+		Commands.GetBookOrBooks(arguments.OutputPath, arguments.RevisionId)
 	elif arguments.Command == "info":
 		Commands.Info()
 	elif arguments.Command == "list":

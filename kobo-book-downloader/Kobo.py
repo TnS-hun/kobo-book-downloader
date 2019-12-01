@@ -3,6 +3,7 @@ from KoboDrmRemover import KoboDrmRemover
 
 import requests
 
+from shutil import copyfile
 from typing import Dict, Tuple
 import base64
 import html
@@ -10,6 +11,8 @@ import os
 import re
 import urllib
 import uuid
+import sys
+import json
 
 class KoboException( Exception ):
 	pass
@@ -287,8 +290,18 @@ class Kobo:
 		return contentKeys
 
 	@staticmethod
-	def __GetDownloadInfo( productId: str, contentAccessBookResponse: dict ) -> Tuple[ str, bool ]:
-		jsonContentUrls = contentAccessBookResponse.get( "ContentUrls" )
+	def __GetDownloadInfo(bookMetadata: dict, isAudiobook: bool, displayProfile: str = None) -> Tuple[str, bool]:
+		displayProfile = displayProfile or Kobo.DisplayProfile
+		jsonContentUrls = None
+
+		if 'ContentUrls' in bookMetadata.keys():
+			jsonContentUrls = bookMetadata.get("ContentUrls")
+		if 'DownloadUrls' in bookMetadata.keys():
+			jsonContentUrls = bookMetadata.get('DownloadUrls')
+		if not jsonContentUrls:
+			jsonResponse = self.__GetContentAccessBook(bookMetadata['RevisionId'], displayProfile)
+
+
 		if jsonContentUrls is None:
 			raise KoboException( "Download URL can't be found for product '%s'." % productId )
 
@@ -296,10 +309,17 @@ class Kobo:
 			raise KoboException( "Download URL list is empty for product '%s'. If this is an archived book then it must be unarchived first on the Kobo website (https://www.kobo.com/help/en-US/article/1799/restoring-deleted-books-or-magazines)." % productId )
 
 		for jsonContentUrl in jsonContentUrls:
-			if ( jsonContentUrl[ "DRMType" ] == "KDRM" or jsonContentUrl[ "DRMType" ] == "SignedNoDrm" ) and \
-				( jsonContentUrl[ "UrlFormat" ] == "EPUB3" or jsonContentUrl[ "UrlFormat" ] == "KEPUB" ):
-				hasDrm = jsonContentUrl[ "DRMType" ] == "KDRM"
-				return jsonContentUrl[ "DownloadUrl" ], hasDrm
+			drm_keys = ['DrmType', 'DRMType']
+			drm_types = ["KDRM", "AdobeDrm"]
+			# will be empty (falsey) if the drm listed doesn't match one of the drm_types
+			hasDrm = [jsonContentUrl.get(key) for key in drm_keys if jsonContentUrl.get(key) in drm_types]
+			
+			download_keys = ['DownloadUrl', 'Url']
+			for key in download_keys:
+				download_url = jsonContentUrl.get(key, None)
+
+			if download_url:
+				return download_url, hasDrm
 
 		message = "Download URL for supported formats can't be found for product '%s'.\n" % productId
 		message += "Available formats:"
@@ -309,30 +329,58 @@ class Kobo:
 		raise KoboException( message )
 
 	def __DownloadToFile( self, url, outputPath: str ) -> None:
-		response = self.Session.get( url, stream = True )
+		response = self.Session.get(url, stream=True)
+
 		response.raise_for_status()
 		with open( outputPath, "wb" ) as f:
 			for chunk in response.iter_content( chunk_size = 1024 * 256 ):
-				f.write( chunk )
+				f.write(chunk)
+				
+	def __DownloadAudiobook(self, url, outputPath: str) -> None:
+		response = self.Session.get(url)
+
+		response.raise_for_status()
+		if not os.path.isdir(outputPath):
+			os.mkdir(outputPath)
+		data = response.json()
+
+		for item in data['Spine']:
+			fileNum = int(item['Id']) + 1
+			response = self.Session.get(item['Url'], stream=True)
+			filePath = os.path.join(outputPath, str(fileNum) + '.' + item['FileExtension'])
+			with open( filePath, "wb" ) as f:
+				for chunk in response.iter_content( chunk_size = 1024 * 256 ):
+					f.write(chunk)
+		
 
 	# Downloading archived books is not possible, the "content_access_book" API endpoint returns with empty ContentKeys
 	# and ContentUrls for them.
-	def Download( self, productId: str, displayProfile: str, outputPath: str ) -> None:
-		jsonResponse = self.__GetContentAccessBook( productId, displayProfile )
-		contentKeys = Kobo.__GetContentKeys( jsonResponse )
-		downloadUrl, hasDrm = Kobo.__GetDownloadInfo( productId, jsonResponse )
+	def Download(self, bookMetadata: dict, isAudiobook: bool, outputPath: str) -> None:
+		downloadUrl, hasDrm = self.__GetDownloadInfo(bookMetadata, isAudiobook)
 
 		temporaryOutputPath = outputPath + ".downloading"
 
 		try:
-			self.__DownloadToFile( downloadUrl, temporaryOutputPath )
+			if isAudiobook:
+				self.__DownloadAudiobook(downloadUrl, outputPath)
+			else:
+				self.__DownloadToFile(downloadUrl, temporaryOutputPath)
 
 			if hasDrm:
-				drmRemover = KoboDrmRemover( Globals.Settings.DeviceId, Globals.Settings.UserId )
-				drmRemover.RemoveDrm( temporaryOutputPath, outputPath, contentKeys )
+				if hasDrm[0] == 'AdobeDrm':
+					extension = ".ade"
+					print("WARNING: Unable to parse the Adobe Digital Editions DRM on %s. Saving it as an encrypted 'ade' file.")
+					print("         Try https://github.com/apprenticeharper/DeDRM_tools")
+					copyfile(temporaryOutputPath, outputPath + ".ade")
+				else:
+					contentAccessBook = self.__GetContentAccessBook(bookMetadata.get("RevisionId"), self.DisplayProfile)
+					contentKeys = Kobo.__GetContentKeys(contentAccessBook)
+					drmRemover = KoboDrmRemover( Globals.Settings.DeviceId, Globals.Settings.UserId )
+					drmRemover.RemoveDrm( temporaryOutputPath, outputPath + ".epub", contentKeys )
 				os.remove( temporaryOutputPath )
 			else:
-				os.rename( temporaryOutputPath, outputPath )
+				if not isAudiobook:
+					os.rename( temporaryOutputPath, outputPath + ".epub" )
 		except:
 			if os.path.isfile( temporaryOutputPath ):
 				os.remove( temporaryOutputPath )
