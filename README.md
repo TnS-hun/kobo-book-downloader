@@ -12,7 +12,7 @@ kobodl preserves the features from `kobo-book-downloader` :
 it adds some new feautres
 
 * multi-user support; fetch books for multiple accounts.
-* web interface; adds new browser gui (todo)
+* web interface; adds new browser gui (with flask)
 * [docker image](https://hub.docker.com/r/subdavis/kobodl)
 * [pypi package](https://pypi.org/project/kobodl/)
 
@@ -70,21 +70,17 @@ Download a book
 # Downloading book to kobo_downloads/Isaac Asimov - Foundation.epub
 ```
 
-Show all help
+Run the web ui
 
 ``` bash
-~$ kobodl --help
+~$ kobodl serve
 
-# Usage: kobodl [OPTIONS] COMMAND [ARGS]...
-#
-# Options:
-#   --fmt TEXT
-#   --version   Show the version and exit.
-#   --help      Show this message and exit.
-#
-# Commands:
-#   book  list and download books
-#   user  user management
+#  * Serving Flask app "kobodl.app" (lazy loading)
+#  * Environment: production
+#    WARNING: This is a development server. Do not use it in a production deployment.
+#    Use a production WSGI server instead.
+#  * Debug mode: off
+#  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
 ```
 
 ## Development

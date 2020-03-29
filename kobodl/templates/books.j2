@@ -1,0 +1,22 @@
+{% include "header.html" %}
+<table>
+  <thead>
+    <tr class="p-2">
+      {% for header in headers %}
+        <th class="p-2">{{ header }}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for book in books %}
+    <tr class="p-2">
+      <td class="px-4">{{ book.Title }}</td>
+      <td class="px-4">{{ book.Author }}</td>
+      <td class="px-4">{{ book.RevisionId }}</td>
+      <td class="px-4">{{ book.Archived }}</td>
+      <td class="px-4">{{ book.Owner.Email }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% include "footer.html" %}

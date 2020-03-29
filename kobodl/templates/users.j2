@@ -1,0 +1,21 @@
+{% include "header.html" %}
+<table>
+  <thead>
+    <tr>
+      {% for header in headers %}
+        <th class="p-2">{{ header }}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for user in users %}
+    <tr class="p-2">
+      <td class="px-4">{{ user.Email }}</td>
+      <td class="px-4">{{ user.UserKey }}</td>
+      <td class="px-4">{{ user.DeviceId }}</td>
+      <td class="px-4">{{ user.AreAuthenticationSettingsSet() }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% include "footer.html" %}
