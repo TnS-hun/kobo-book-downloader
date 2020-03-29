@@ -1,74 +1,102 @@
-## kobo-book-downloader
+# Kobodl
 
-With kobo-book-downloader you can download your purchased [Kobo](https://www.kobo.com/) books and remove the Digital Rights Management (DRM) protection from them. The resulting [EPUB](https://en.wikipedia.org/wiki/EPUB) files can be read with, amongst others, [KOReader](https://github.com/koreader/koreader).
+This is a hard fork of [kobo-book-downloader](https://github.com/TnS-hun/kobo-book-downloader), a command line tool to download and remove Digital Rights Management (DRM) protection from media legally purchased from [Rakuten Kobo](https://www.kobo.com/). The resulting [EPUB](https://en.wikipedia.org/wiki/EPUB) files can be read with, amongst others, [KOReader](https://github.com/koreader/koreader).
 
-Unlike [obok.py](https://github.com/apprenticeharper/DeDRM_tools/blob/master/Other_Tools/Kobo/obok.py), kobo-book-downloader doesn't require any pre-downloading through a Kobo e-reader or application.
+## Features
 
-kobo-book-downloader is a command line program. It looks like this:
+kobodl preserves the features from `kobo-book-downloader` :
 
-![Screenshot](https://raw.githubusercontent.com/TnS-hun/kobo-book-downloader/master/screenshot.png)
+* stand-alone; no need to run other software or pre-download through an e-reader.
+* downloads `.epub` formatted books
+
+it adds some new feautres
+
+* multi-user support; fetch books for multiple accounts.
+* web interface; adds new browser gui (todo)
+* docker image (todo)
+* pypi package (todo)
 
 ## Installation
 
-kobo-book-downloader requires [Python 3+](https://www.python.org/). Make sure that you have it installed. You can verify it by running `python --version` from the terminal.
+with pipx
 
-Use Git to clone this repository or [download it](https://github.com/TnS-hun/kobo-book-downloader/archive/master.zip) as a zip. If you downloaded it as a zip then you have to extract it.
+``` bash
+pipx install kobodl
+```
 
-From your terminal enter the directory where kobo-book-downloader is then run `pip install -r requirements.txt` to install its dependencies.
+with pypi
 
-It has been tested on Linux but it should work on other platforms too.
+``` bash
+pip3 install kobodl
+```
 
-## Usage
+with docker
 
-To interactively select from your unread books to download:
+``` bash
+docker run --rm -it -v $(HOME)/.config/kobodl.json:/usr/local/etc/kobodl.json subdavis/kobodl --help
 ```
-python kobo-book-downloader pick /dir/
+
+## Examples
+
+Get started by adding one or more users
+
+``` bash
+~$ kobodl user add
 ```
-To interactively select from all of your books to download:
+
+List books from multiple accounts
+
+``` bash
+~$ kobodl book list
+
+# +---------------------------------+-----------------------------+--------------------------------------+---------------------------+
+# | Title                           | Author                      | RevisionId                           | Owner                     |
+# |---------------------------------+-----------------------------+--------------------------------------+---------------------------|
+# | Dune                            | Frank Herbert               | c1db3f5c-82da-4dda-9d81-fa718d5d1d16 | user@example.com          |
+# | Foundation                      | Isaac Asimov                | 3e12197c-681a-4a53-80b4-88fcdf61e936 | user@example.com          |
+# | Girls Burn Brighter             | Shobha Rao                  | 1227cc03-7580-4469-81a5-b6558500832f | user@example.com          |
+# | On Earth We're Briefly Gorgeous | Ocean Vuong                 | 4ccc68b1-3dac-433e-b05a-63ab0f93578f | other@domain.com          |
+# | She Said                        | Jodi Kantor                 | 5d0872bf-8765-4654-9f90-aca4f54e5707 | other@domain.com          |
+# +---------------------------------+-----------------------------+--------------------------------------+---------------------------+
 ```
-python kobo-book-downloader pick /dir/ --all
+
+Download a book
+
+``` bash
+~$ kobodl book get -u user@example.com c1db3f5c-82da-4dda-9d81-fa718d5d1d16
+
+# Downloading book to kobo_downloads/Isaac Asimov - Foundation.epub
 ```
-To list your unread books:
+
+Show all help
+
+``` bash
+~$ kobodl --help
+
+# Usage: kobodl [OPTIONS] COMMAND [ARGS]...
+#
+# Options:
+#   --fmt TEXT
+#   --version   Show the version and exit.
+#   --help      Show this message and exit.
+#
+# Commands:
+#   book  list and download books
+#   user  user management
 ```
-python kobo-book-downloader list
-```
-To list all your books:
-```
-python kobo-book-downloader list --all
-```
-To download a book:
-```
-python kobo-book-downloader get /dir/book.epub 01234567-89ab-cdef-0123-456789abcdef
-```
-To download a book and name the file automatically:
-```
-python kobo-book-downloader get /dir/ 01234567-89ab-cdef-0123-456789abcdef
-```
-To download all your books:
-```
-python kobo-book-downloader get /dir/ --all
-```
-To list all your books from your wish list:
-```
-python kobo-book-downloader wishlist
-```
-To show the location of the program's configuration file:
-```
-python kobo-book-downloader info
-```
-Running the program without any arguments will show the help:
-```
-python kobo-book-downloader
-```
-To get additional help for the **list** command (it works for **get** and **pick** too):
-```
-python kobo-book-downloader list --help
-```
+
+## Development
+
+To get set up for development:
+
+1. clone this repo
+2. create a virtual environment (optional)
+3. `pip3 install -e .` to install for development
+4. `kobodl` should be available inside the virtual env
 
 ## Notes
 
-kobo-book-downloader will prompt for your [Kobo](https://www.kobo.com/) e-mail address and password. Once it has successfully logged in, it won't ask for them again, it doesn't store them either, from then on it works with access tokens.
+kobo-book-downloader will prompt for your [Kobo](https://www.kobo.com/) e-mail address and password. Once it has successfully logged in, it won't ask for them again. Your password will not be stored on disk; Kobodl uses access tokens after the initial login.
 
-The program was made out of frustration with my workflow (purchase book on Kobo, turn on WiFi on the router, exit from KOReader, start Nickel from the Kobo start menu, turn on WiFi on the Kobo e-reader, wait till the downloading and other syncing finishes, turn off the WiFi on the e-reader, turn off the WiFi on the router, connect the e-reader via USB, run obok.py, copy the book to the e-reader, power off the e-reader, start KOReader, and finally start reading).
+Credit recursively to [kobo-book-downloader](https://github.com/TnS-hun/kobo-book-downloader) and the projects that lead to it.
 
-The DRM removal code is based on Physisticated's [obok.py](https://github.com/apprenticeharper/DeDRM_tools/blob/master/Other_Tools/Kobo/obok.py). Thank you!
