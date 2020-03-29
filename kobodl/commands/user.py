@@ -1,10 +1,10 @@
 import click
 from tabulate import tabulate
 
-from kobo_book_downloader.kobo import Kobo
-from kobo_book_downloader.globals import Globals
-from kobo_book_downloader.settings import User
-from kobo_book_downloader import cli, actions
+from kobodl.kobo import Kobo
+from kobodl.globals import Globals
+from kobodl.settings import User
+from kobodl import cli, actions
 
 
 @click.group(name='user', short_help='user management')

@@ -12,9 +12,9 @@ from dataclasses_json import dataclass_json
 import requests
 
 
-from kobo_book_downloader.globals import Globals
-from kobo_book_downloader.koboDrmRemover import KoboDrmRemover
-from kobo_book_downloader.settings import User
+from kobodl.globals import Globals
+from kobodl.koboDrmRemover import KoboDrmRemover
+from kobodl.settings import User
 
 
 @dataclass_json

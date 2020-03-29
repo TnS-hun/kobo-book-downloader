@@ -62,4 +62,4 @@ class Settings:
             if not os.path.isdir(cacheHome):
                 cacheHome = home
 
-        return os.path.join(cacheHome, "kobo-book-downloader.json")
+        return os.path.join(cacheHome, "kobodl.json")

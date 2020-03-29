@@ -9,7 +9,7 @@ def cli(ctx, fmt):
     ctx.obj = {'fmt': fmt}
 
 
-from kobo_book_downloader.commands import (  # noqa: F401 E402
+from kobodl.commands import (  # noqa: F401 E402
     user,
     book,
 )

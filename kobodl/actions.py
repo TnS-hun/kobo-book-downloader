@@ -3,14 +3,14 @@ from typing import List
 
 import colorama
 
-from kobo_book_downloader.globals import Globals
-from kobo_book_downloader.kobo import (
+from kobodl.globals import Globals
+from kobodl.kobo import (
     Book,
     Kobo,
     KoboException,
     NotAuthenticatedException,
 )
-from kobo_book_downloader.settings import User
+from kobodl.settings import User
 
 
 def __GetBookAuthor(book: dict) -> str:

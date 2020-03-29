@@ -3,8 +3,8 @@ import os
 import click
 from tabulate import tabulate
 
-from kobo_book_downloader.globals import Globals
-from kobo_book_downloader import cli, actions
+from kobodl.globals import Globals
+from kobodl import cli, actions
 
 
 @click.group(name='book', short_help='list and download books')

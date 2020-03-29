@@ -13,8 +13,8 @@ it adds some new feautres
 
 * multi-user support; fetch books for multiple accounts.
 * web interface; adds new browser gui (todo)
-* docker image (todo)
-* pypi package (todo)
+* docker image
+* pypi package
 
 ## Installation
 
@@ -33,7 +33,9 @@ pip3 install kobodl
 with docker
 
 ``` bash
-docker run --rm -it -v $(HOME)/.config/kobodl.json:/usr/local/etc/kobodl.json subdavis/kobodl --help
+docker run --rm -it --user $(id -u):$(id -g) \
+  -v ${HOME}/.config/kobodl.json:/.config/kobodl.json subdavis/kobodl \
+  user list
 ```
 
 ## Examples
@@ -99,4 +101,3 @@ To get set up for development:
 kobo-book-downloader will prompt for your [Kobo](https://www.kobo.com/) e-mail address and password. Once it has successfully logged in, it won't ask for them again. Your password will not be stored on disk; Kobodl uses access tokens after the initial login.
 
 Credit recursively to [kobo-book-downloader](https://github.com/TnS-hun/kobo-book-downloader) and the projects that lead to it.
-
