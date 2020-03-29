@@ -13,7 +13,7 @@ it adds some new feautres
 
 * multi-user support; fetch books for multiple accounts.
 * web interface; adds new browser gui (todo)
-* [docker image](https://hub.docker.com/repository/docker/subdavis/kobodl)
+* [docker image](https://hub.docker.com/r/subdavis/kobodl)
 * [pypi package](https://pypi.org/project/kobodl/)
 
 ## Installation
