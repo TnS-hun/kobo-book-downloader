@@ -1,20 +1,24 @@
+
 {% include "header.html" %}
-<table>
+<h1 class="text-4xl py-2">Books</h1>
+<table class="table-auto m-auto w-full">
   <thead>
-    <tr class="p-2">
-      {% for header in headers %}
-        <th class="p-2">{{ header }}</th>
-      {% endfor %}
+    <tr class="text-left">
+      <th class="p-2 pl-4"> Title </th>
+      <th class="p-2 pl-4"> Author </th>
+      <th class="p-2 pl-4"> RevisionId </th>
+      <th class="p-2 pl-4"> Archived </th>
+      <th class="p-2 pl-4"> Owner </th>
     </tr>
   </thead>
   <tbody>
     {% for book in books %}
-    <tr class="p-2">
-      <td class="px-4">{{ book.Title }}</td>
-      <td class="px-4">{{ book.Author }}</td>
-      <td class="px-4">{{ book.RevisionId }}</td>
-      <td class="px-4">{{ book.Archived }}</td>
-      <td class="px-4">{{ book.Owner.Email }}</td>
+    <tr>
+      <td class="border px-4 p-1">{{ book.Title }}</td>
+      <td class="border px-4 p-1">{{ book.Author }}</td>
+      <td class="border px-4 p-1">{{ book.RevisionId }}</td>
+      <td class="border px-4 p-1">{{ book.Archived }}</td>
+      <td class="border px-4 p-1">{{ book.Owner.Email }}</td>
     </tr>
     {% endfor %}
   </tbody>

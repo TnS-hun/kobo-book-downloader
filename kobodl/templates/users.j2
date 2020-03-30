@@ -1,19 +1,22 @@
 {% include "header.html" %}
-<table>
+{% include "instructions.html" %}
+<h1 class="text-4xl py-2">Users</h1>
+<table class="table-auto m-auto w-full">
   <thead>
-    <tr>
-      {% for header in headers %}
-        <th class="p-2">{{ header }}</th>
-      {% endfor %}
+    <tr class="text-left">
+      <th class="p-2 pl-4"> Email </th>
+      <th class="p-2 pl-4""> UserKey </th>
+      <th class="p-2 pl-4""> DeviceId </th>
+      <th class="p-2 pl-4""> Authed </th>
     </tr>
   </thead>
   <tbody>
     {% for user in users %}
     <tr class="p-2">
-      <td class="px-4">{{ user.Email }}</td>
-      <td class="px-4">{{ user.UserKey }}</td>
-      <td class="px-4">{{ user.DeviceId }}</td>
-      <td class="px-4">{{ user.AreAuthenticationSettingsSet() }}</td>
+      <td class="border px-4 p-1">{{ user.Email }}</td>
+      <td class="border px-4 p-1">{{ user.UserKey }}</td>
+      <td class="border px-4 p-1">{{ user.DeviceId }}</td>
+      <td class="border px-4 p-1">{{ user.AreAuthenticationSettingsSet() }}</td>
     </tr>
     {% endfor %}
   </tbody>

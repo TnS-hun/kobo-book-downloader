@@ -1,0 +1,33 @@
+<div>
+  <h1 class="text-4xl py-2">Usage</h1>
+  <ul class="pb-6 pl-4 list-disc">
+    <li>Open
+      <a href="https://authorize.kobo.com/signin" class="text-blue-700">https://authorize.kobo.com/signin</a>
+      in a <b>private or incognito</b> window in your browser. <b>Do not login!</b>
+    </li>
+    <li>
+      Open the developer tools. Press F12 in Firefox/Chrome, or right click the window and select "Inspect"
+    </li>
+    <li>
+      Select the console tab, and copy-and-pase the following code, then press enter.
+    </li>
+  </ul>
+  <div class="rounded px-2 overflow-x-auto max-w-full" style="background-color: #f5f2f0;">
+    <pre><code class="language-js">var newCaptchaDiv = document.createElement( "div" );
+newCaptchaDiv.id = "new-grecaptcha-container";
+document.getElementById( "grecaptcha-container" )
+  .insertAdjacentElement( "afterend", newCaptchaDiv );
+grecaptcha.render( newCaptchaDiv.id, {
+  sitekey: "6LeEbUwUAAAAADJxtlhMsvgnR7SsFpMm4sirr1CJ",
+  callback: function( response ) {
+    console.log( "Captcha response:" );
+    console.log( response );
+  }
+});</code></pre>
+  </div>
+  <ul class="py-6 pl-4 list-disc">
+    <li>A captcha should show up below the Sign-in form. Once you solve the captcha its response will be written
+      below the pasted code in the browser's console. Copy the response (the line below "Captcha response:")
+      and paste it here.</li>
+  </ul>
+</div>

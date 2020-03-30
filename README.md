@@ -16,6 +16,12 @@ it adds some new feautres
 * [docker image](https://hub.docker.com/r/subdavis/kobodl)
 * [pypi package](https://pypi.org/project/kobodl/)
 
+## Web UI
+
+Web UI is a work in progress, and is currently read-only.
+
+![Example of User page](docs/webss.png)
+
 ## Installation
 
 with pipx
