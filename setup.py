@@ -5,7 +5,7 @@ from setuptools import find_packages, setup
 setup(
     name='kobodl',
     author='Brandon Davis',
-    version='0.1.0',
+    version='0.1.1',
     author_email='kobodl@subdavis.com',
     url="https://github.com/subdavis/kobo-book-downloader",
     packages=find_packages(),

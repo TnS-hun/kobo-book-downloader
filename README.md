@@ -1,3 +1,5 @@
+![kobodl logo](docs/banner-image.png)
+
 # Kobodl
 
 This is a hard fork of [kobo-book-downloader](https://github.com/TnS-hun/kobo-book-downloader), a command line tool to download and remove Digital Rights Management (DRM) protection from media legally purchased from [Rakuten Kobo](https://www.kobo.com/). The resulting [EPUB](https://en.wikipedia.org/wiki/EPUB) files can be read with, amongst others, [KOReader](https://github.com/koreader/koreader).
@@ -98,8 +100,21 @@ To get set up for development:
 3. `pip3 install -e .` to install for development
 4. `kobodl` should be available inside the virtual env
 
+## Release
+
+First, update setup.py's version, then run the following
+
+``` bash
+docker build -t subdavis/kobodl .
+docker push subdavis/kobodl
+
+python3 setup.py sdist bdist_wheel
+twine upload dist/*
+```
+
 ## Notes
 
 kobo-book-downloader will prompt for your [Kobo](https://www.kobo.com/) e-mail address and password. Once it has successfully logged in, it won't ask for them again. Your password will not be stored on disk; Kobodl uses access tokens after the initial login.
 
 Credit recursively to [kobo-book-downloader](https://github.com/TnS-hun/kobo-book-downloader) and the projects that lead to it.
+

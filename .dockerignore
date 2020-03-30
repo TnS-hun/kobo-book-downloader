@@ -7,3 +7,4 @@ venv/
 kobo_downloads/
 build/
 dist/
+docs/
