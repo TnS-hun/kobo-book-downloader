@@ -91,6 +91,13 @@ Run the web ui
 #  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
 ```
 
+## Getting a reCAPTCHA code
+
+Adding a user requires a bit of hackery to get a reCAPTCHA code from Kobo's website.  This GIF helps to explain how to do that.
+
+![Gif explaining how to get reCAPTHCA](docs/captcha.gif)
+
+
 ## Development
 
 To get set up for development:
