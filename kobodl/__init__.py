@@ -1,16 +1,23 @@
 import click
 
 from kobodl.app import app
+from kobodl.globals import Globals
+from kobodl.settings import Settings
 
 @click.group()
-@click.option('--fmt', type=click.STRING, default='psql')
+@click.option('--fmt', type=click.STRING, default='psql', help='python-tabulate table format string')
+@click.option('--config',
+    type=click.Path(dir_okay=False, file_okay=True, writable=True),
+    help='path to kobodl.json config file',
+)
 @click.version_option()
 @click.pass_context
-def cli(ctx, fmt):
+def cli(ctx, fmt, config):
+    Globals.Settings = Settings(config)
     ctx.obj = {'fmt': fmt}
 
 
-@click.command(name='serve')
+@click.command(name='serve', short_help='start an http server')
 @click.option('-h', '--host', type=click.STRING)
 @click.option('-p', '--port', type=click.INT)
 @click.option('--debug', is_flag=True)

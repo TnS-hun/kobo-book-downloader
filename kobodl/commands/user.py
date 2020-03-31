@@ -7,7 +7,7 @@ from kobodl.settings import User
 from kobodl import cli, actions
 
 
-@click.group(name='user', short_help='user management')
+@click.group(name='user', short_help='show and create users')
 def user():
     pass
 

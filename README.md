@@ -1,6 +1,6 @@
 ![kobodl logo](docs/banner.png)
 
-# Kobodl
+# kobodl
 
 This is a hard fork of [kobo-book-downloader](https://github.com/TnS-hun/kobo-book-downloader), a command line tool to download and remove Digital Rights Management (DRM) protection from media legally purchased from [Rakuten Kobo](https://www.kobo.com/). The resulting [EPUB](https://en.wikipedia.org/wiki/EPUB) files can be read with, amongst others, [KOReader](https://github.com/koreader/koreader).
 
@@ -41,9 +41,21 @@ pip3 install kobodl
 with docker
 
 ``` bash
+# list users
 docker run --rm -it --user $(id -u):$(id -g) \
-  -v ${HOME}/.config/kobodl.json:/.config/kobodl.json subdavis/kobodl \
-  user list
+  -v ${HOME}/.config/kobodl.json:/home/kobodl.json subdavis/kobodl \
+  --config /home/kobodl.json user list
+
+# run http server
+docker run --rm -it --user $(id -u):$(id -g) \
+  -p 5000:5000 \
+  -v ${HOME}/.config/kobodl.json:/home/kobodl.json \
+  -v ${PWD}/kobo_downloads:/home/downloads \
+  subdavis/kobodl \
+  --config /home/kobodl.json \
+  serve \
+  --host 0.0.0.0 \
+  --output-dir /home/downloads
 ```
 
 ## Examples
@@ -58,37 +70,34 @@ List books from multiple accounts
 
 ``` bash
 ~$ kobodl book list
-
-# +---------------------------------+-----------------------------+--------------------------------------+---------------------------+
-# | Title                           | Author                      | RevisionId                           | Owner                     |
-# |---------------------------------+-----------------------------+--------------------------------------+---------------------------|
-# | Dune                            | Frank Herbert               | c1db3f5c-82da-4dda-9d81-fa718d5d1d16 | user@example.com          |
-# | Foundation                      | Isaac Asimov                | 3e12197c-681a-4a53-80b4-88fcdf61e936 | user@example.com          |
-# | Girls Burn Brighter             | Shobha Rao                  | 1227cc03-7580-4469-81a5-b6558500832f | user@example.com          |
-# | On Earth We're Briefly Gorgeous | Ocean Vuong                 | 4ccc68b1-3dac-433e-b05a-63ab0f93578f | other@domain.com          |
-# | She Said                        | Jodi Kantor                 | 5d0872bf-8765-4654-9f90-aca4f54e5707 | other@domain.com          |
-# +---------------------------------+-----------------------------+--------------------------------------+---------------------------+
++---------------------------------+-----------------------------+--------------------------------------+---------------------------+
+| Title                           | Author                      | RevisionId                           | Owner                     |
+|---------------------------------+-----------------------------+--------------------------------------+---------------------------|
+| Dune                            | Frank Herbert               | c1db3f5c-82da-4dda-9d81-fa718d5d1d16 | user@example.com          |
+| Foundation                      | Isaac Asimov                | 3e12197c-681a-4a53-80b4-88fcdf61e936 | user@example.com          |
+| Girls Burn Brighter             | Shobha Rao                  | 1227cc03-7580-4469-81a5-b6558500832f | user@example.com          |
+| On Earth We're Briefly Gorgeous | Ocean Vuong                 | 4ccc68b1-3dac-433e-b05a-63ab0f93578f | other@domain.com          |
+| She Said                        | Jodi Kantor                 | 5d0872bf-8765-4654-9f90-aca4f54e5707 | other@domain.com          |
++---------------------------------+-----------------------------+--------------------------------------+---------------------------+
 ```
 
 Download a book
 
 ``` bash
 ~$ kobodl book get -u user@example.com c1db3f5c-82da-4dda-9d81-fa718d5d1d16
-
-# Downloading book to kobo_downloads/Isaac Asimov - Foundation.epub
+Downloading book to kobo_downloads/Isaac Asimov - Foundation.epub
 ```
 
 Run the web ui
 
 ``` bash
 ~$ kobodl serve
-
-#  * Serving Flask app "kobodl.app" (lazy loading)
-#  * Environment: production
-#    WARNING: This is a development server. Do not use it in a production deployment.
-#    Use a production WSGI server instead.
-#  * Debug mode: off
-#  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+ * Serving Flask app "kobodl.app" (lazy loading)
+ * Environment: production
+   WARNING: This is a development server. Do not use it in a production deployment.
+   Use a production WSGI server instead.
+ * Debug mode: off
+ * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
 ```
 
 ## Getting a reCAPTCHA code
@@ -96,7 +105,6 @@ Run the web ui
 Adding a user requires a bit of hackery to get a reCAPTCHA code from Kobo's website.  This GIF helps to explain how to do that.
 
 ![Gif explaining how to get reCAPTHCA](docs/captcha.gif)
-
 
 ## Development
 

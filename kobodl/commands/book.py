@@ -17,7 +17,6 @@ def book():
     '-u',
     '--user',
     type=click.STRING,
-    required=len(Globals.Settings.UserList.users) > 1,
     help='Required when multiple accounts exist. Use either Email or UserKey',
 )
 @click.option(
@@ -37,6 +36,9 @@ def get(ctx, user, output_dir, get_all, revision_id):
         exit(1)
 
     if not user:
+        if len(Globals.Settings.UserList.users) > 1:
+            click.echo('error: must provide --user option when more than 1 user exists.')
+            exit(1)
         # Exactly 1 user account exists
         usercls = Globals.Settings.UserList.users[0]
     else:

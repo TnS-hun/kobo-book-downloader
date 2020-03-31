@@ -1,0 +1,2 @@
+graft kobodl/templates
+global-exclude *.pyc
