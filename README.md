@@ -1,4 +1,4 @@
-![kobodl logo](docs/banner-image.png)
+![kobodl logo](docs/banner.png)
 
 # Kobodl
 
