@@ -19,6 +19,9 @@
       <td class="border px-4 p-1">{{ book.RevisionId }}</td>
       <td class="border px-4 p-1">{{ book.Archived }}</td>
       <td class="border px-4 p-1">{{ book.Owner.Email }}</td>
+      <td class="border px-4 p-1">
+        <a href="/user/{{ book.Owner.UserKey }}/book/{{ book.RevisionId }}" class="text-blue-700">💾</a>
+      </td>
     </tr>
     {% endfor %}
   </tbody>

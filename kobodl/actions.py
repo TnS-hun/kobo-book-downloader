@@ -1,6 +1,7 @@
 import os
 from typing import List
 
+import click
 import colorama
 
 from kobodl.globals import Globals
@@ -90,15 +91,11 @@ def GetAllBooks(user: User, outputPath: str) -> None:
             if len(author) > 0:
                 title += " by " + author
 
-            print(
-                colorama.Fore.LIGHTYELLOW_EX
-                + ("Skipping archived book %s." % title)
-                + colorama.Fore.RESET
-            )
+            click.echo(f"Skipping archived book {title}")
             continue
 
-        print(f"Downloading book to {outputFilePath}")
-        kobo.Download(bookMetadata["RevisionId"], outputFilePath)
+        output = kobo.Download(bookMetadata["RevisionId"], outputFilePath)
+        click.echo(f"Downloaded to {output}", err=True)
 
 
 def GetBook(user: User, revisionId: str, outputPath: str) -> None:
@@ -107,8 +104,7 @@ def GetBook(user: User, revisionId: str, outputPath: str) -> None:
     book = kobo.GetBookInfo(revisionId)
     fileName = __MakeFileNameForBook(book)
     outputFilePath = os.path.join(outputPath, fileName)
-    print(f"Downloading book to {outputFilePath}")
-    kobo.Download(revisionId, outputFilePath)
+    return kobo.Download(revisionId, outputFilePath)
 
 
 def __IsBookRead(newEntitlement: dict) -> bool:

@@ -1,5 +1,6 @@
 {% include "header.html" %}
-{% include "instructions.html" %}
+
+{% if users %}
 <h1 class="text-4xl py-2">Users</h1>
 <table class="table-auto m-auto w-full">
   <thead>
@@ -7,7 +8,7 @@
       <th class="p-2 pl-4"> Email </th>
       <th class="p-2 pl-4""> UserKey </th>
       <th class="p-2 pl-4""> DeviceId </th>
-      <th class="p-2 pl-4""> Authed </th>
+      <th class="p-2 pl-4""> Books </th>
     </tr>
   </thead>
   <tbody>
@@ -16,9 +17,50 @@
       <td class="border px-4 p-1">{{ user.Email }}</td>
       <td class="border px-4 p-1">{{ user.UserKey }}</td>
       <td class="border px-4 p-1">{{ user.DeviceId }}</td>
-      <td class="border px-4 p-1">{{ user.AreAuthenticationSettingsSet() }}</td>
+      <td class="border px-4 p-1">
+        <a href="/user/{{ user.UserKey }}/book" class="text-blue-700">books</a>
+      </td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
+{% endif %}
+
+<h1 class="text-2xl mt-6">Add User</h1>
+<form style="max-width: 500px;" action="/user" method="post">
+  {% include "error.j2" %}
+  <input
+    class="my-2 shadow appearance-none border
+      rounded w-full py-2 px-3 text-gray-700
+      leading-tight focus:outline-none focus:shadow-outline"
+    type="text"
+    name="email"
+    placeholder="Kobo Account Email"
+  >
+  <input
+    class="my-2 shadow appearance-none border
+      rounded w-full py-2 px-3 text-gray-700 mb-3
+      leading-tight focus:outline-none focus:shadow-outline"
+    name="password"
+    type="password"
+    placeholder="password"
+  >
+  <input
+    class="my-2 shadow appearance-none border
+      rounded w-full py-2 px-3 text-gray-700 mb-3
+      leading-tight focus:outline-none focus:shadow-outline"
+    name="captcha"
+    type="text"
+    placeholder="captcha code (see instructions)"
+  >
+  <button
+    class="my-2 bg-blue-500 hover:bg-blue-700 text-white font-bold
+      py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+    type="submit"
+  >
+    Add user
+  </button>
+</form>
+
+{% include "instructions.html" %}
 {% include "footer.html" %}

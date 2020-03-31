@@ -311,6 +311,7 @@ class Kobo:
                 os.remove(temporaryOutputPath)
             else:
                 os.rename(temporaryOutputPath, outputPath)
+            return outputPath
         except:
             if os.path.isfile(temporaryOutputPath):
                 os.remove(temporaryOutputPath)

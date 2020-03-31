@@ -58,11 +58,12 @@ def get(ctx, user, output_dir, get_all, revision_id):
     
     os.makedirs(output_dir, exist_ok=True)
     if get_all:
-        actions.GetAllBooks(usercls, output_dir)
+        output = actions.GetAllBooks(usercls, output_dir)
+        click.echo(f'Downloaded to {output}')
     else:
         for rid in revision_id:
-            actions.GetBook(usercls, rid, output_dir)
-
+            output = actions.GetBook(usercls, rid, output_dir)
+            click.echo(f'Downloaded {rid} to {output}')
 
 @book.command(name='list', help='list books')
 @click.option(

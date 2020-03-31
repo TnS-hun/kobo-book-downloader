@@ -1,5 +1,5 @@
-<div>
-  <h1 class="text-4xl py-2">Usage</h1>
+<div class="my-4">
+  <h1 class="text-2xl py-2">CAPTCHA Code Instructions</h1>
   <ul class="pb-6 pl-4 list-disc">
     <li>Open
       <a href="https://authorize.kobo.com/signin" class="text-blue-700">https://authorize.kobo.com/signin</a>
@@ -11,9 +11,14 @@
     <li>
       Select the console tab, and copy-and-pase the following code, then press enter.
     </li>
+    <li>A captcha should show up below the Sign-in form. Once you solve the captcha its response will be written
+      below the pasted code in the browser's console. Copy the response (the line below "Captcha response:")
+      and paste it here.</li>
   </ul>
-  <div class="rounded px-2 overflow-x-auto max-w-full" style="background-color: #f5f2f0;">
-    <pre><code class="language-js">var newCaptchaDiv = document.createElement( "div" );
+  <div class="flex flex-wrap items-start">
+    <img class="mr-4" width="580px" src="https://raw.githubusercontent.com/subdavis/kobo-book-downloader/master/docs/captcha.gif">
+    <div class="flex-shrink rounded px-4 overflow-x-auto text-xs whitespace-pre font-mono" style="background-color: #f5f2f0; min-width: 420px;">
+var newCaptchaDiv = document.createElement( "div" );
 newCaptchaDiv.id = "new-grecaptcha-container";
 document.getElementById( "grecaptcha-container" )
   .insertAdjacentElement( "afterend", newCaptchaDiv );
@@ -24,10 +29,6 @@ grecaptcha.render( newCaptchaDiv.id, {
     console.log( response );
   }
 });</code></pre>
+    </div>
   </div>
-  <ul class="py-6 pl-4 list-disc">
-    <li>A captcha should show up below the Sign-in form. Once you solve the captcha its response will be written
-      below the pasted code in the browser's console. Copy the response (the line below "Captcha response:")
-      and paste it here.</li>
-  </ul>
 </div>
