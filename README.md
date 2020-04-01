@@ -1,5 +1,12 @@
 ![kobodl logo](docs/banner.png)
 
+![Docker Pulls](https://img.shields.io/docker/pulls/subdavis/kobodl)
+![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/subdavis/kobodl)
+![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/subdavis/kobodl)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/kobodl)
+![PyPI - License](https://img.shields.io/pypi/l/kobodl)
+![PyPI](https://img.shields.io/pypi/v/kobodl)
+
 # kobodl
 
 This is a hard fork of [kobo-book-downloader](https://github.com/TnS-hun/kobo-book-downloader), a command line tool to download and remove Digital Rights Management (DRM) protection from media legally purchased from [Rakuten Kobo](https://www.kobo.com/). The resulting [EPUB](https://en.wikipedia.org/wiki/EPUB) files can be read with, amongst others, [KOReader](https://github.com/koreader/koreader).
