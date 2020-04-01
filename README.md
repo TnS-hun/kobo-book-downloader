@@ -20,7 +20,7 @@ it adds some new feautres
 
 ## Web UI
 
-Web UI is a work in progress, and is currently read-only.
+WebUI provides all the same functions that the CLI did.  It was added to allow other members of a household to add their accounts to kobodl and access their books without having to set up python.  An example of how to run kobodl on your server with systemd can be found at [subdavis/selfhosted](https://github.com/subdavis/selfhosted/blob/master/kobodl.service).
 
 ![Example of User page](docs/webss.png)
 
