@@ -20,8 +20,9 @@ kobodl preserves the features from `kobo-book-downloader` :
 
 it adds some new feautres
 
-* multi-user support; fetch books for multiple accounts.
-* web interface; adds new browser gui (with flask)
+* **audiobook support**; cli only for now.
+* **multi-user support**; fetch books for multiple accounts.
+* **web interface**; adds new browser gui (with flask)
 * [docker image](https://hub.docker.com/r/subdavis/kobodl)
 * [pypi package](https://pypi.org/project/kobodl/)
 

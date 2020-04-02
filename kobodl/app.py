@@ -57,7 +57,9 @@ def downloadBook(userid, productid):
     outputPath = actions.GetBook(user, productid, outputRelPath)
     _, tail = os.path.split(outputPath)
     directory = os.path.join(os.getcwd(), outputRelPath)
-    return send_from_directory(directory, tail, as_attachment=True, attachment_filename=tail)
+    return send_from_directory(
+        directory, tail, as_attachment=True, attachment_filename=tail
+    )
 
 
 @app.route('/book', methods=['GET'])

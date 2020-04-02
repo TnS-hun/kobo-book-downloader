@@ -4,9 +4,16 @@ from kobodl.app import app
 from kobodl.globals import Globals
 from kobodl.settings import Settings
 
+
 @click.group()
-@click.option('--fmt', type=click.STRING, default='psql', help='python-tabulate table format string')
-@click.option('--config',
+@click.option(
+    '--fmt',
+    type=click.STRING,
+    default='simple',
+    help='python-tabulate table format string',
+)
+@click.option(
+    '--config',
     type=click.Path(dir_okay=False, file_okay=True, writable=True),
     help='path to kobodl.json config file',
 )

@@ -3,6 +3,7 @@ import os
 import click
 from tabulate import tabulate
 
+from kobodl.commands.utils import boolAsEmoji
 from kobodl.globals import Globals
 from kobodl import cli, actions
 
@@ -28,16 +29,18 @@ def book():
 @click.option(
     '-a', '--get-all', is_flag=True,
 )
-@click.argument('revision-id', nargs=-1, type=click.STRING)
+@click.argument('product-id', nargs=-1, type=click.STRING)
 @click.pass_obj
-def get(ctx, user, output_dir, get_all, revision_id):
+def get(ctx, user, output_dir, get_all, product_id):
     if len(Globals.Settings.UserList.users) == 0:
         click.echo('error: no users found.  Did you `kobodl user add`?', err=True)
         exit(1)
 
     if not user:
         if len(Globals.Settings.UserList.users) > 1:
-            click.echo('error: must provide --user option when more than 1 user exists.')
+            click.echo(
+                'error: must provide --user option when more than 1 user exists.'
+            )
             exit(1)
         # Exactly 1 user account exists
         usercls = Globals.Settings.UserList.users[0]
@@ -48,24 +51,25 @@ def get(ctx, user, output_dir, get_all, revision_id):
             click.echo(f'error: could not find user with name or id {user}')
             exit(1)
 
-    if get_all and len(revision_id):
+    if get_all and len(product_id):
         click.echo(
-            'error: cannot pass revision IDs when --get-all is used. Use one or the other.',
+            'error: cannot pass product IDs when --get-all is used. Use one or the other.',
             err=True,
         )
         exit(1)
-    if not get_all and len(revision_id) == 0:
-        click.echo('error: must pass at least one Product ID, or use --get-all', err=True)
+    if not get_all and len(product_id) == 0:
+        click.echo(
+            'error: must pass at least one Product ID, or use --get-all', err=True
+        )
         exit(1)
-    
+
     os.makedirs(output_dir, exist_ok=True)
     if get_all:
-        output = actions.GetAllBooks(usercls, output_dir)
-        click.echo(f'Downloaded to {output}')
+        actions.GetBookOrBooks(usercls, output_dir)
     else:
-        for rid in revision_id:
-            output = actions.GetBook(usercls, rid, output_dir)
-            click.echo(f'Downloaded {rid} to {output}')
+        for pid in product_id:
+            output = actions.GetBookOrBooks(usercls, output_dir, productId=pid)
+
 
 @book.command(name='list', help='list books')
 @click.option(
@@ -82,10 +86,17 @@ def list(ctx, user, read):
     if user:
         userlist = [Globals.Settings.UserList.getUser(user)]
     books = actions.ListBooks(userlist, read)
-    headers = ['Title', 'Author', 'RevisionId', 'Archived', 'Owner']
+    headers = ['Title', 'Author', 'RevisionId', '🗃️', '🎧', 'Owner']
     data = sorted(
         [
-            (book.Title, book.Author, book.RevisionId, book.Archived, book.Owner.Email)
+            (
+                book.Title,
+                book.Author,
+                book.RevisionId,
+                boolAsEmoji(book.Archived),
+                boolAsEmoji(book.Audiobook),
+                book.Owner.Email,
+            )
             for book in books
         ]
     )
