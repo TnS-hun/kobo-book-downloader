@@ -37,7 +37,9 @@ def get(ctx, user, output_dir, get_all, revision_id):
 
     if not user:
         if len(Globals.Settings.UserList.users) > 1:
-            click.echo('error: must provide --user option when more than 1 user exists.')
+            click.echo(
+                'error: must provide --user option when more than 1 user exists.'
+            )
             exit(1)
         # Exactly 1 user account exists
         usercls = Globals.Settings.UserList.users[0]
@@ -55,9 +57,11 @@ def get(ctx, user, output_dir, get_all, revision_id):
         )
         exit(1)
     if not get_all and len(revision_id) == 0:
-        click.echo('error: must pass at least one Product ID, or use --get-all', err=True)
+        click.echo(
+            'error: must pass at least one Product ID, or use --get-all', err=True
+        )
         exit(1)
-    
+
     os.makedirs(output_dir, exist_ok=True)
     if get_all:
         output = actions.GetAllBooks(usercls, output_dir)
@@ -66,6 +70,7 @@ def get(ctx, user, output_dir, get_all, revision_id):
         for rid in revision_id:
             output = actions.GetBook(usercls, rid, output_dir)
             click.echo(f'Downloaded {rid} to {output}')
+
 
 @book.command(name='list', help='list books')
 @click.option(
@@ -82,10 +87,10 @@ def list(ctx, user, read):
     if user:
         userlist = [Globals.Settings.UserList.getUser(user)]
     books = actions.ListBooks(userlist, read)
-    headers = ['Title', 'Author', 'RevisionId', 'Archived', 'Owner']
+    headers = ['Title', 'Author', 'RevisionId', 'Archived', 'Audiobook', 'Owner']
     data = sorted(
         [
-            (book.Title, book.Author, book.RevisionId, book.Archived, book.Owner.Email)
+            (book.Title, book.Author, book.RevisionId, book.Archived, book.Audiobook, book.Owner.Email)
             for book in books
         ]
     )

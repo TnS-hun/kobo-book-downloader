@@ -37,8 +37,9 @@ class UserList:
                 return user
         return None
 
+
 class Settings:
-    def __init__(self, configpath = None):
+    def __init__(self, configpath=None):
         self.SettingsFilePath = configpath or Settings.__GetCacheFilePath()
         self.UserList = self.Load()
 
