@@ -9,7 +9,7 @@ from kobodl.settings import Settings
 @click.option(
     '--fmt',
     type=click.STRING,
-    default='psql',
+    default='simple',
     help='python-tabulate table format string',
 )
 @click.option(

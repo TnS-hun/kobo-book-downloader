@@ -1,5 +1,5 @@
 import os
-from typing import List
+from typing import List, Union
 
 import click
 import colorama
@@ -46,7 +46,7 @@ def __SanitizeFileName(fileName: str) -> str:
 
 
 def __MakeFileNameForBook(bookMetadata: dict) -> str:
-    """filename without extension"""
+    '''filename without extension'''
     fileName = ''
     author = __GetBookAuthor(bookMetadata)
     if len(author) > 0:
@@ -76,41 +76,6 @@ def __IsBookArchived(newEntitlement: dict) -> bool:
 
 def __IsAudioBook(bookMetadata: dict) -> bool:
     return 'Duration' in bookMetadata.keys()
-
-
-def GetAllBooks(user: User, outputPath: str) -> None:
-    kobo = Kobo(User)
-    kobo.LoadInitializationSettings()
-    bookList = kobo.GetMyBookList()
-
-    for entitlement in bookList:
-        newEntitlement = entitlement.get('NewEntitlement')
-        if newEntitlement is None:
-            continue
-
-        bookMetadata = __GetBookMetadata(newEntitlement)
-        isAudiobook = __IsAudioBook(bookMetadata)
-        fileName = __MakeFileNameForBook(bookMetadata)
-        outputFilePath = os.path.join(outputPath, fileName)
-
-        # Skip archived books.
-        if __IsBookArchived(newEntitlement):
-            click.echo(f'Skipping archived book {fileName}')
-            continue
-
-        output = kobo.Download(bookMetadata, isAudiobook, outputFilePath)
-        click.echo(f'Downloaded to {output}', err=True)
-
-
-def GetBook(user: User, revisionId: str, outputPath: str) -> str:
-    """returns output path"""
-    kobo = Kobo(user)
-    kobo.LoadInitializationSettings()
-    bookMetadata = kobo.GetBookInfo(revisionId)
-    isAudiobook = __IsAudioBook(bookMetadata)
-    fileName = __MakeFileNameForBook(bookMetadata)
-    outputFilePath = os.path.join(outputPath, fileName)
-    return kobo.Download(bookMetadata, revisionId, isAudiobook, outputFilePath)
 
 
 def __IsBookRead(newEntitlement: dict) -> bool:
@@ -149,7 +114,6 @@ def __GetBookList(kobo: Kobo, listAll: bool) -> list:
             continue
 
         bookMetadata = __GetBookMetadata(newEntitlement)
-        print(bookMetadata, '\n')
         book = [
             bookMetadata['RevisionId'],
             bookMetadata['Title'],
@@ -164,6 +128,7 @@ def __GetBookList(kobo: Kobo, listAll: bool) -> list:
 
 
 def ListBooks(users: List[User], listAll: bool) -> List[Book]:
+    '''list all books currently in the account'''
     for user in users:
         kobo = Kobo(user)
         kobo.LoadInitializationSettings()
@@ -180,7 +145,53 @@ def ListBooks(users: List[User], listAll: bool) -> List[Book]:
 
 
 def Login(user: User, password: str, captcha: str) -> None:
+    '''perform device initialization and get token'''
     kobo = Kobo(user)
     kobo.AuthenticateDevice()
     kobo.LoadInitializationSettings()
     kobo.Login(user.Email, password, captcha)
+
+
+def GetBookOrBooks(
+    user: User, outputPath: str, productId: str = ''
+) -> Union[None, str]:
+    '''
+    download 1 or all books to file
+    returns output filepath if identifier is passed, otherwise returns None
+    '''
+    kobo = Kobo(user)
+    kobo.LoadInitializationSettings()
+
+    # Must call GetBookList every time, even if you're only getting 1 book,
+    # because it invokes a library sync endpoint.
+    # This is the only known endpoint that returns
+    # download URLs along with book metadata.
+    bookList = kobo.GetMyBookList()
+
+    for entitlement in bookList:
+        newEntitlement = entitlement.get('NewEntitlement')
+        if newEntitlement is None:
+            continue
+
+        bookMetadata = __GetBookMetadata(newEntitlement)
+        isAudiobook = __IsAudioBook(bookMetadata)
+        fileName = __MakeFileNameForBook(bookMetadata)
+        outputFilePath = os.path.join(outputPath, fileName)
+
+        if productId and productId != Kobo.GetProductId(bookMetadata):
+            # user only asked for a single title,
+            # and this is not the book they want
+            continue
+
+        # Skip archived books.
+        if __IsBookArchived(newEntitlement):
+            click.echo(f'Skipping archived book {fileName}')
+            continue
+
+        kobo.Download(bookMetadata, isAudiobook, outputFilePath)
+        click.echo(f'Downloaded {productId} to {outputFilePath}', err=True)
+
+        if productId:
+            return outputFilePath
+
+    return None

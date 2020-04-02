@@ -48,12 +48,7 @@ class Kobo:
         self.Session = requests.session()
         self.user = user
 
-    # PRIVATE METHODS:
-    @staticmethod
-    def __GetProductId(bookMetadata: dict) -> str:
-        revisionId = bookMetadata.get('RevisionId')
-        Id = bookMetadata.get('Id')
-        return revisionId or Id
+    # PRIVATE METHODS
 
     # This could be added to the session but then we would need to add { "Authorization": None } headers to all other
     # functions that doesn't need authorization.
@@ -222,7 +217,7 @@ class Kobo:
         self, bookMetadata: dict, isAudiobook: bool, displayProfile: str = None
     ) -> Tuple[str, bool]:
         displayProfile = displayProfile or Kobo.DisplayProfile
-        productId = Kobo.__GetProductId(bookMetadata)
+        productId = Kobo.GetProductId(bookMetadata)
 
         jsonContentUrls = Kobo.__getContentUrls(bookMetadata)
         if not jsonContentUrls:
@@ -286,6 +281,11 @@ class Kobo:
                     f.write(chunk)
 
     # PUBLIC METHODS:
+    @staticmethod
+    def GetProductId(bookMetadata: dict) -> str:
+        revisionId = bookMetadata.get('RevisionId')
+        Id = bookMetadata.get('Id')
+        return revisionId or Id
 
     # The initial device authentication request for a non-logged in user doesn't require a user key, and the returned
     # user key can't be used for anything.
@@ -335,7 +335,7 @@ class Kobo:
     def Download(self, bookMetadata: dict, isAudiobook: bool, outputPath: str) -> None:
 
         downloadUrl, hasDrm = self.__GetDownloadInfo(bookMetadata, isAudiobook)
-        revisionId = Kobo.__GetProductId(bookMetadata)
+        revisionId = Kobo.GetProductId(bookMetadata)
         temporaryOutputPath = outputPath + ".downloading"
 
         try:
@@ -348,10 +348,8 @@ class Kobo:
                 if hasDrm[0] == 'AdobeDrm':
                     extension = ".ade"
                     print(
-                        "WARNING: Unable to parse the Adobe Digital Editions DRM. Saving it as an encrypted 'ade' file."
-                    )
-                    print(
-                        "         Try https://github.com/apprenticeharper/DeDRM_tools"
+                        "WARNING: Unable to parse the Adobe Digital Editions DRM. Saving it as an encrypted 'ade' file.",
+                        "Try https://github.com/apprenticeharper/DeDRM_tools",
                     )
                     copyfile(temporaryOutputPath, outputPath + ".ade")
                 else:
@@ -426,8 +424,12 @@ class Kobo:
         return items
 
     def GetBookInfo(self, productId: str) -> dict:
-        audiobook_url = self.InitializationSettings["audiobook"].replace("{ProductId}", productId)
-        ebook_url = self.InitializationSettings["book"].replace("{ProductId}", productId)
+        audiobook_url = self.InitializationSettings["audiobook"].replace(
+            "{ProductId}", productId
+        )
+        ebook_url = self.InitializationSettings["book"].replace(
+            "{ProductId}", productId
+        )
         headers = self.__GetHeaderWithAccessToken()
         hooks = self.__GetReauthenticationHook()
 
@@ -449,9 +451,13 @@ class Kobo:
         response = self.Session.get(
             "https://storeapi.kobo.com/v1/initialization", headers=headers, hooks=hooks
         )
-        response.raise_for_status()
-        jsonResponse = response.json()
-        self.InitializationSettings = jsonResponse["Resources"]
+        try:
+            response.raise_for_status()
+            jsonResponse = response.json()
+            self.InitializationSettings = jsonResponse["Resources"]
+        except requests.HTTPError as err:
+            print(response.reason, response.text)
+            raise err
 
     def Login(self, email: str, password: str, captcha: str) -> None:
         (
