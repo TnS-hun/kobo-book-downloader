@@ -364,9 +364,11 @@ class Kobo:
                         temporaryOutputPath, outputPath + ".epub", contentKeys
                     )
                 os.remove(temporaryOutputPath)
+                return outputPath + ".epub"
             else:
                 if not isAudiobook:
                     os.rename(temporaryOutputPath, outputPath + ".epub")
+                    return outputPath + ".epub"
         except:
             if os.path.isfile(temporaryOutputPath):
                 os.remove(temporaryOutputPath)

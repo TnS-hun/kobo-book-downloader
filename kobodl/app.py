@@ -54,7 +54,7 @@ def downloadBook(userid, productid):
         abort(404)
     outputRelPath = app.config.get('output_dir')
     os.makedirs(outputRelPath, exist_ok=True)
-    outputPath = actions.GetBook(user, productid, outputRelPath)
+    outputPath = actions.GetBookOrBooks(user, outputRelPath, productId=productid)
     _, tail = os.path.split(outputPath)
     directory = os.path.join(os.getcwd(), outputRelPath)
     return send_from_directory(

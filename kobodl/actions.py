@@ -192,6 +192,7 @@ def GetBookOrBooks(
         click.echo(f'Downloaded {productId} to {outputFilePath}', err=True)
 
         if productId:
-            return outputFilePath
+            # TODO: support audiobook downloads from web
+            return outputFilePath + ".epub"
 
     return None
