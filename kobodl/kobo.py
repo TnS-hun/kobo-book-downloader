@@ -219,9 +219,10 @@ class Kobo:
         displayProfile = displayProfile or Kobo.DisplayProfile
         productId = Kobo.GetProductId(bookMetadata)
 
-        jsonContentUrls = Kobo.__getContentUrls(bookMetadata)
-        if not jsonContentUrls:
+        if not isAudiobook:
             jsonResponse = self.__GetContentAccessBook(productId, displayProfile)
+            jsonContentUrls = Kobo.__getContentUrls(jsonResponse)
+        else:
             jsonContentUrls = Kobo.__getContentUrls(bookMetadata)
 
         if jsonContentUrls is None:
@@ -245,9 +246,8 @@ class Kobo:
             download_keys = ['DownloadUrl', 'Url']
             for key in download_keys:
                 download_url = jsonContentUrl.get(key, None)
-
-            if download_url:
-                return download_url, hasDrm
+                if download_url:
+                    return download_url, hasDrm
 
         message = f"Download URL for supported formats can't be found for product '{productId}'.\n"
         message += "Available formats:"
