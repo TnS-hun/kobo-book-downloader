@@ -358,7 +358,7 @@ class Kobo:
                     )
                     contentKeys = Kobo.__GetContentKeys(contentAccessBook)
                     drmRemover = KoboDrmRemover(
-                        Globals.Settings.DeviceId, Globals.Settings.UserId
+                        self.user.DeviceId, self.user.UserId
                     )
                     drmRemover.RemoveDrm(
                         temporaryOutputPath, outputPath + ".epub", contentKeys
