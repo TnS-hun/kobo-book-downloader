@@ -1,6 +1,7 @@
 import click
 from tabulate import tabulate
 
+from kobodl.commands.utils import boolAsEmoji
 from kobodl.kobo import Kobo
 from kobodl.globals import Globals
 from kobodl.settings import User
@@ -12,7 +13,7 @@ def user():
     pass
 
 
-@user.command(name='list', help='list users')
+@user.command(name='list', help='list all users')
 @click.pass_obj
 def list(ctx):
     userlist = Globals.Settings.UserList.users
@@ -23,12 +24,24 @@ def list(ctx):
                 user.Email,
                 user.UserKey,
                 user.DeviceId,
-                user.AreAuthenticationSettingsSet(),
+                boolAsEmoji(user.AreAuthenticationSettingsSet()),
             )
             for user in userlist
         ]
     )
     click.echo(tabulate(data, headers, tablefmt=ctx['fmt']))
+
+
+@user.command(name='rm', help='remove user by Email, UserKey, or DeviceID')
+@click.argument('identifier', type=click.STRING)
+@click.pass_obj
+def list(ctx, identifier):
+    removed = Globals.Settings.UserList.removeUser(identifier)
+    if removed:
+        Globals.Settings.Save()
+        click.echo(f'Removed {removed.Email}')
+    else:
+        click.echo(f'No user with email, key, or device id that matches "{identifier}"')
 
 
 @user.command(name='add', help='add new user')

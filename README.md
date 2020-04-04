@@ -78,6 +78,9 @@ General usage
 # List users
 ~$ kobodl user list
 
+# Remove a user
+~$ kobodl user rm email@domain.com
+
 # List books
 ~$ kobodl book list
 

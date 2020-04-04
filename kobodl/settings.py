@@ -33,8 +33,20 @@ class UserList:
 
     def getUser(self, identifier: str) -> Union[User, None]:
         for user in self.users:
-            if user.Email == identifier or user.UserKey == identifier:
+            if (
+                user.Email == identifier
+                or user.UserKey == identifier
+                or user.DeviceId == identifier
+            ):
                 return user
+        return None
+
+    def removeUser(self, identifier: str) -> Union[User, None]:
+        """returns the removed user"""
+        user = self.getUser(identifier)
+        if user:
+            i = self.users.index(user)
+            return self.users.pop(i)
         return None
 
 
