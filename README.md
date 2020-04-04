@@ -13,12 +13,12 @@ This is a hard fork of [kobo-book-downloader](https://github.com/TnS-hun/kobo-bo
 
 ## Features
 
-kobodl preserves the features from `kobo-book-downloader` :
+kobodl preserves the features from [TnS-hun/kobo-book-downloader](https://github.com/TnS-hun/kobo-book-downloader).
 
 * stand-alone; no need to run other software or pre-download through an e-reader.
 * downloads `.epub` formatted books
 
-it adds some new feautres
+It adds several new features.
 
 * **audiobook support**; cli only for now.
 * **multi-user support**; fetch books for multiple accounts.
@@ -28,7 +28,7 @@ it adds some new feautres
 
 ## Web UI
 
-WebUI provides all the same functions that the CLI did.  It was added to allow other members of a household to add their accounts to kobodl and access their books without having to set up python.  An example of how to run kobodl on your server with systemd can be found at [subdavis/selfhosted](https://github.com/subdavis/selfhosted/blob/master/kobodl.service).
+WebUI provides most of the same functions of the CLI.  It was added to allow other members of a household to add their accounts to kobodl and access their books without having to set up python.  An example of how to run kobodl on your server with systemd can be found at [subdavis/selfhosted](https://github.com/subdavis/selfhosted/blob/master/kobodl.service).
 
 ![Example of User page](docs/webss.png)
 
@@ -66,37 +66,48 @@ docker run --rm -it --user $(id -u):$(id -g) \
   --output-dir /home/downloads
 ```
 
-## Examples
+## Usage
 
-Get started by adding one or more users
+General usage
 
 ``` bash
+# Get started by adding one or more users
+# See `Getting a reCAPTCHA code` below for more help
 ~$ kobodl user add
-```
 
-List books from multiple accounts
+# List users
+~$ kobodl user list
 
-``` bash
+# List books
 ~$ kobodl book list
-+---------------------------------+-----------------------------+--------------------------------------+---------------------------+
-| Title                           | Author                      | RevisionId                           | Owner                     |
-|---------------------------------+-----------------------------+--------------------------------------+---------------------------|
-| Dune                            | Frank Herbert               | c1db3f5c-82da-4dda-9d81-fa718d5d1d16 | user@example.com          |
-| Foundation                      | Isaac Asimov                | 3e12197c-681a-4a53-80b4-88fcdf61e936 | user@example.com          |
-| Girls Burn Brighter             | Shobha Rao                  | 1227cc03-7580-4469-81a5-b6558500832f | user@example.com          |
-| On Earth We're Briefly Gorgeous | Ocean Vuong                 | 4ccc68b1-3dac-433e-b05a-63ab0f93578f | other@domain.com          |
-| She Said                        | Jodi Kantor                 | 5d0872bf-8765-4654-9f90-aca4f54e5707 | other@domain.com          |
-+---------------------------------+-----------------------------+--------------------------------------+---------------------------+
+
+# List books for a single user
+~$ kobodl book list --user email@domain.com
+
+# Show book list help
+~$ kobodl book list --help
+
+# Download a single book with default options when only 1 user exists
+# default output directory is `./kobo_downloads`
+~$ kobodl book get c1db3f5c-82da-4dda-9d81-fa718d5d1d16
+
+# Download a single book with advanced options
+~$ kobodl book get \
+  --user email@domain.com \
+  --output-dir /path/to/download_directory \
+  c1db3f5c-82da-4dda-9d81-fa718d5d1d16
+
+# Download ALL books with default options when only 1 user exists
+~$ kobodl book get --all
+
+# Download ALL books with advanced options
+~$ kobodl book get \
+  --user email@domain.com \
+  --output-dir /path/to/download_directory \
+  --all
 ```
 
-Download a book
-
-``` bash
-~$ kobodl book get -u user@example.com c1db3f5c-82da-4dda-9d81-fa718d5d1d16
-Downloading book to kobo_downloads/Isaac Asimov - Foundation.epub
-```
-
-Run the web ui
+Running the web UI
 
 ``` bash
 ~$ kobodl serve
@@ -106,6 +117,22 @@ Run the web ui
    Use a production WSGI server instead.
  * Debug mode: off
  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+```
+
+Global options
+
+``` bash
+# argument format
+~$ kobodl [OPTIONS] COMMAND [ARGS]...
+
+# set python tabulate formatting style.
+~$ kobodl --fmt "pretty" COMMAND [ARGS]...
+
+# set config path if different than ~/.config/kobodl.json
+~$ kobodl --config /path/to/kobodl.json COMMAND [ARGS]...
+
+# get version
+~$ kobodl --version
 ```
 
 ## Getting a reCAPTCHA code
@@ -140,4 +167,3 @@ twine upload dist/*
 kobo-book-downloader will prompt for your [Kobo](https://www.kobo.com/) e-mail address and password. Once it has successfully logged in, it won't ask for them again. Your password will not be stored on disk; Kobodl uses access tokens after the initial login.
 
 Credit recursively to [kobo-book-downloader](https://github.com/TnS-hun/kobo-book-downloader) and the projects that lead to it.
-

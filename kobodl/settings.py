@@ -56,7 +56,7 @@ class Settings:
 
     @staticmethod
     def __GetCacheFilePath() -> str:
-        cacheHome = os.environ.get("XDG_CONFIG_HOME.")
+        cacheHome = os.environ.get("XDG_CONFIG_HOME")
         if (cacheHome is None) or (not os.path.isdir(cacheHome)):
             home = os.path.expanduser("~")
             cacheHome = os.path.join(home, ".config")
