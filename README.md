@@ -103,13 +103,13 @@ General usage
   c1db3f5c-82da-4dda-9d81-fa718d5d1d16
 
 # Download ALL books with default options when only 1 user exists
-~$ kobodl book get --all
+~$ kobodl book get --get-all
 
 # Download ALL books with advanced options
 ~$ kobodl book get \
   --user email@domain.com \
   --output-dir /path/to/download_directory \
-  --all
+  --get-all
 ```
 
 Running the web UI
