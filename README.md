@@ -183,3 +183,32 @@ kobo-book-downloader will prompt for your [Kobo](https://www.kobo.com/) e-mail a
 
 Credit recursively to [kobo-book-downloader](https://github.com/TnS-hun/kobo-book-downloader) and the projects that lead to it.
 
+## FAQ
+
+**How does this work?**
+
+kobodl works by pretending to be an Android Kobo e-reader.  It initializes a device, fetches your library, and downloads books as a "fake" Android app.
+
+**Why does this download KEPUB formatted books?**
+
+Kobo has different formats that it serves to different platforms.  For example, Desktop users generally get `EPUB3` books with `AdobeDrm` DRM.  Android users typically get `KEPUB` books with `KDRM` DRM, which is fairly easy to remove, so that's what you get when you use this tool.
+
+**Is this tool safe and okay to use?**
+
+I'm not a lawyer, and the discussion below is strictly academic.
+
+The author(s) of `kobodl` don't collect any information about you or your account aside from what is made available through metrics from GitHub, PyPi, Docker Hub, etc.  See `LICENSE.md` for further info.
+
+Kobo would probably claim that this tool violates its [Terms of Use](https://authorize.kobo.com/terms/termsofuse) but I'm not able to conclusively determine that it does so.  Some relevant sections are reproduced here.
+
+> The download of, and access to any Digital Content is available only to Customers and is intended only for such Customers’ personal and non-commercial use. Any other use of Digital Content downloaded or accessed from the Service is strictly prohibited
+
+This tool should only be used to download books for personal use.
+
+> You may not obscure or misrepresent your geographical location, forge headers, use proxies, use IP spoofing or otherwise manipulate identifiers in order to disguise the origin of any message or transmittal you send on or through the Service. You may not pretend that you are, or that you represent, someone else, or impersonate any other individual or entity.
+
+This might be a violation.  This client announces itself to Kobo servers as an Android device, which can safely be construed as "manipulating identifiers", but whether or not the purpose is to "disguise the origin" is unclear.
+
+> Kobo may also take steps to prevent fraud, such as restricting the number of titles that may be accessed at one time, and monitoring Customer accounts for any activity that may violate these Terms. If Kobo discovers any type of fraud, Kobo reserves the right to take enforcement action including the termination or suspension of a User’s account.
+
+In other words, you could have your account suspended for using `kobodl`. **Please open an issue on the issue tracker if this happens to you.**
