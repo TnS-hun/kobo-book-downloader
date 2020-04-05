@@ -9,7 +9,7 @@ with open(os.path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 setup(
     name='kobodl',
     author='Brandon Davis',
-    version='0.3.3',
+    version='0.3.4',
     author_email='kobodl@subdavis.com',
     url="https://github.com/subdavis/kobo-book-downloader",
     long_description=long_description,

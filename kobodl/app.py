@@ -52,13 +52,15 @@ def downloadBook(userid, productid):
     user = Globals.Settings.UserList.getUser(userid)
     if not user:
         abort(404)
-    outputRelPath = app.config.get('output_dir')
-    os.makedirs(outputRelPath, exist_ok=True)
-    outputPath = actions.GetBookOrBooks(user, outputRelPath, productId=productid)
-    _, tail = os.path.split(outputPath)
-    directory = os.path.join(os.getcwd(), outputRelPath)
+    outputDir = app.config.get('output_dir')
+    os.makedirs(outputDir, exist_ok=True)
+    # GetBookOrBooks always returns an absolute path
+    outputFileName = actions.GetBookOrBooks(user, outputDir, productId=productid)
+    absOutputDir, tail = os.path.split(outputFileName)
+    # send_from_directory must be given an absolute path to avoid confusion
+    # (relative paths are relative to root_path, not working dir)
     return send_from_directory(
-        directory, tail, as_attachment=True, attachment_filename=tail
+        absOutputDir, tail, as_attachment=True, attachment_filename=tail
     )
 
 
