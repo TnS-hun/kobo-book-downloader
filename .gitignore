@@ -1,7 +1,6 @@
 /.idea/
 *.pyc
 *.egg-info/
-.vscode
 .eggs/
 venv/
 kobo_downloads/

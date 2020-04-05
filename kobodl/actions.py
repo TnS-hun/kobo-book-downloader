@@ -2,15 +2,9 @@ import os
 from typing import List, Union
 
 import click
-import colorama
 
 from kobodl.globals import Globals
-from kobodl.kobo import (
-    Book,
-    Kobo,
-    KoboException,
-    NotAuthenticatedException,
-)
+from kobodl.kobo import Book, Kobo, KoboException, NotAuthenticatedException
 from kobodl.settings import User
 
 
@@ -152,9 +146,7 @@ def Login(user: User, password: str, captcha: str) -> None:
     kobo.Login(user.Email, password, captcha)
 
 
-def GetBookOrBooks(
-    user: User, outputPath: str, productId: str = ''
-) -> Union[None, str]:
+def GetBookOrBooks(user: User, outputPath: str, productId: str = '') -> Union[None, str]:
     '''
     download 1 or all books to file
     returns output filepath if identifier is passed, otherwise returns None

@@ -11,7 +11,7 @@
 
 This is a hard fork of [kobo-book-downloader](https://github.com/TnS-hun/kobo-book-downloader), a command line tool to download and remove Digital Rights Management (DRM) protection from media legally purchased from [Rakuten Kobo](https://www.kobo.com/). The resulting [EPUB](https://en.wikipedia.org/wiki/EPUB) files can be read with, amongst others, [KOReader](https://github.com/koreader/koreader).
 
-> **NOTE:** You must have a kobo email login for this tool to work (you can't use an external provider like Google or Facebook).  However, you can create a NEW kobo account and link it with your existing account on the user profile page. Go to `My Account -> Account Settings` to link your new kobo login.
+> **NOTE:** You must have a kobo email login for this tool to work (you can't use an external provider like Google or Facebook). However, you can create a NEW kobo account and link it with your existing account on the user profile page. Go to `My Account -> Account Settings` to link your new kobo login.
 
 ## Features
 
@@ -30,7 +30,7 @@ It adds several new features.
 
 ## Web UI
 
-WebUI provides most of the same functions of the CLI.  It was added to allow other members of a household to add their accounts to kobodl and access their books without having to set up python.  An example of how to run kobodl on your server with systemd can be found at [subdavis/selfhosted](https://github.com/subdavis/selfhosted/blob/master/kobodl.service).
+WebUI provides most of the same functions of the CLI. It was added to allow other members of a household to add their accounts to kobodl and access their books without having to set up python. An example of how to run kobodl on your server with systemd can be found at [subdavis/selfhosted](https://github.com/subdavis/selfhosted/blob/master/kobodl.service).
 
 ![Example of User page](docs/webss.png)
 
@@ -93,7 +93,7 @@ General usage
 ~$ kobodl book list --help
 
 # Download a single book with default options when only 1 user exists
-# default output directory is `./kobo_downloads`
+# default output directory is `./kobo_downloads` 
 ~$ kobodl book get c1db3f5c-82da-4dda-9d81-fa718d5d1d16
 
 # Download a single book with advanced options
@@ -142,7 +142,7 @@ Global options
 
 ## Getting a reCAPTCHA code
 
-Adding a user requires a bit of hackery to get a reCAPTCHA code from Kobo's website.  This GIF helps to explain how to do that.
+Adding a user requires a bit of hackery to get a reCAPTCHA code from Kobo's website. This GIF helps to explain how to do that.
 
 ![Gif explaining how to get reCAPTHCA](docs/captcha.gif)
 
@@ -154,6 +154,16 @@ To get set up for development:
 2. create a virtual environment (optional)
 3. `pip3 install -e .` to install for development
 4. `kobodl` should be available inside the virtual env
+
+## Linting
+
+VS Code is configured to do this for you. Otherwise, run the following:
+
+``` bash
+pip3 install -r dev-requirements.txt
+isort -rc kobodl/*
+black .
+```
 
 ## Release
 
@@ -172,3 +182,4 @@ twine upload dist/*
 kobo-book-downloader will prompt for your [Kobo](https://www.kobo.com/) e-mail address and password. Once it has successfully logged in, it won't ask for them again. Your password will not be stored on disk; Kobodl uses access tokens after the initial login.
 
 Credit recursively to [kobo-book-downloader](https://github.com/TnS-hun/kobo-book-downloader) and the projects that lead to it.
+

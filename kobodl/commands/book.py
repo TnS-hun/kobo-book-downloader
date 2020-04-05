@@ -3,9 +3,9 @@ import os
 import click
 from tabulate import tabulate
 
+from kobodl import actions, cli
 from kobodl.commands.utils import boolAsEmoji
 from kobodl.globals import Globals
-from kobodl import cli, actions
 
 
 @click.group(name='book', short_help='list and download books')
@@ -38,9 +38,7 @@ def get(ctx, user, output_dir, get_all, product_id):
 
     if not user:
         if len(Globals.Settings.UserList.users) > 1:
-            click.echo(
-                'error: must provide --user option when more than 1 user exists.'
-            )
+            click.echo('error: must provide --user option when more than 1 user exists.')
             exit(1)
         # Exactly 1 user account exists
         usercls = Globals.Settings.UserList.users[0]
@@ -58,9 +56,7 @@ def get(ctx, user, output_dir, get_all, product_id):
         )
         exit(1)
     if not get_all and len(product_id) == 0:
-        click.echo(
-            'error: must pass at least one Product ID, or use --get-all', err=True
-        )
+        click.echo('error: must pass at least one Product ID, or use --get-all', err=True)
         exit(1)
 
     os.makedirs(output_dir, exist_ok=True)

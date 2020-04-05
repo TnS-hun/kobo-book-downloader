@@ -1,11 +1,11 @@
 import click
 from tabulate import tabulate
 
+from kobodl import actions, cli
 from kobodl.commands.utils import boolAsEmoji
-from kobodl.kobo import Kobo
 from kobodl.globals import Globals
+from kobodl.kobo import Kobo
 from kobodl.settings import User
-from kobodl import cli, actions
 
 
 @click.group(name='user', short_help='show and create users')
@@ -45,9 +45,7 @@ def list(ctx, identifier):
 
 
 @user.command(name='add', help='add new user')
-@click.option(
-    '--email', prompt=True, hide_input=False, type=click.STRING, help="kobo.com email."
-)
+@click.option('--email', prompt=True, hide_input=False, type=click.STRING, help="kobo.com email.")
 @click.password_option(help="kobo.com password (not stored)")
 @click.pass_obj
 def add(ctx, email, password):

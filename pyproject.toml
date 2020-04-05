@@ -1,2 +1,13 @@
 [tool.black]
+line-length = 100
 skip-string-normalization = true
+target-version = ['py37']
+exclude='\.eggs|\.git|\.mypy_cache|\.tox|\.venv|_build|buck-out|build|dist'
+
+[tool.isort]
+line_length = 100
+use_parentheses = true
+include_trailing_comma = true
+multi_line_output = 3
+skip = "venv/**/*"
+recursive = true
