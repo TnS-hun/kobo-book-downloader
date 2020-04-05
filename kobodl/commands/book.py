@@ -26,9 +26,7 @@ def book():
     type=click.Path(file_okay=False, dir_okay=True, writable=True),
     default='kobo_downloads',
 )
-@click.option(
-    '-a', '--get-all', is_flag=True,
-)
+@click.option('-a', '--get-all', is_flag=True)
 @click.argument('product-id', nargs=-1, type=click.STRING)
 @click.pass_obj
 def get(ctx, user, output_dir, get_all, product_id):
@@ -76,12 +74,17 @@ def get(ctx, user, output_dir, get_all, product_id):
     help='Limit list to a single user. Use either Email or UserKey',
 )
 @click.option('--read', is_flag=True, help='include books marked as read')
+@click.option(
+    '--export-library',
+    type=click.File(mode='w'),
+    help='filepath to write raw JSON library data to.',
+)
 @click.pass_obj
-def list(ctx, user, read):
+def list(ctx, user, read, export_library):
     userlist = Globals.Settings.UserList.users
     if user:
         userlist = [Globals.Settings.UserList.getUser(user)]
-    books = actions.ListBooks(userlist, read)
+    books = actions.ListBooks(userlist, read, export_library)
     headers = ['Title', 'Author', 'RevisionId', '🗃️', '🎧', 'Owner']
     data = sorted(
         [

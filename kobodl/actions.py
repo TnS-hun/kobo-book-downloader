@@ -1,5 +1,6 @@
+import json
 import os
-from typing import List, Union
+from typing import List, TextIO, Union
 
 import click
 
@@ -85,9 +86,12 @@ def __IsBookRead(newEntitlement: dict) -> bool:
     return status == 'Finished'
 
 
-def __GetBookList(kobo: Kobo, listAll: bool) -> list:
+def __GetBookList(kobo: Kobo, listAll: bool, exportFile: Union[TextIO, None]) -> list:
     bookList = kobo.GetMyBookList()
     rows = []
+
+    if exportFile:
+        exportFile.write(json.dumps(bookList, indent=2))
 
     for entitlement in bookList:
         newEntitlement = entitlement.get('NewEntitlement')
@@ -121,12 +125,12 @@ def __GetBookList(kobo: Kobo, listAll: bool) -> list:
     return rows
 
 
-def ListBooks(users: List[User], listAll: bool) -> List[Book]:
+def ListBooks(users: List[User], listAll: bool, exportFile: Union[TextIO, None]) -> List[Book]:
     '''list all books currently in the account'''
     for user in users:
         kobo = Kobo(user)
         kobo.LoadInitializationSettings()
-        rows = __GetBookList(kobo, listAll)
+        rows = __GetBookList(kobo, listAll, exportFile)
         for columns in rows:
             yield Book(
                 RevisionId=columns[0],
