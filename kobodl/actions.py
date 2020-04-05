@@ -159,6 +159,7 @@ def GetBookOrBooks(
     download 1 or all books to file
     returns output filepath if identifier is passed, otherwise returns None
     '''
+    outputPath = os.path.abspath(outputPath)
     kobo = Kobo(user)
     kobo.LoadInitializationSettings()
 
@@ -176,7 +177,16 @@ def GetBookOrBooks(
         bookMetadata = __GetBookMetadata(newEntitlement)
         isAudiobook = __IsAudioBook(bookMetadata)
         fileName = __MakeFileNameForBook(bookMetadata)
+        if not isAudiobook:
+            # Audiobooks go in sub-directories
+            # but epub files go directly in outputPath
+            fileName += '.epub'
         outputFilePath = os.path.join(outputPath, fileName)
+
+        if not productId and os.path.exists(outputFilePath):
+            # when downloading ALL books, skip books we've downloaded before
+            click.echo(f'Skipping already downloaded book {outputFilePath}')
+            continue
 
         if productId and productId != Kobo.GetProductId(bookMetadata):
             # user only asked for a single title,
@@ -193,6 +203,6 @@ def GetBookOrBooks(
 
         if productId:
             # TODO: support audiobook downloads from web
-            return outputFilePath + ".epub"
+            return outputFilePath
 
     return None

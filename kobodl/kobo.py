@@ -346,7 +346,6 @@ class Kobo:
 
             if hasDrm:
                 if hasDrm[0] == 'AdobeDrm':
-                    extension = ".ade"
                     print(
                         "WARNING: Unable to parse the Adobe Digital Editions DRM. Saving it as an encrypted 'ade' file.",
                         "Try https://github.com/apprenticeharper/DeDRM_tools",
@@ -361,14 +360,12 @@ class Kobo:
                         self.user.DeviceId, self.user.UserId
                     )
                     drmRemover.RemoveDrm(
-                        temporaryOutputPath, outputPath + ".epub", contentKeys
+                        temporaryOutputPath, outputPath, contentKeys
                     )
                 os.remove(temporaryOutputPath)
-                return outputPath + ".epub"
             else:
                 if not isAudiobook:
-                    os.rename(temporaryOutputPath, outputPath + ".epub")
-                    return outputPath + ".epub"
+                    os.rename(temporaryOutputPath, outputPath)
         except:
             if os.path.isfile(temporaryOutputPath):
                 os.remove(temporaryOutputPath)
