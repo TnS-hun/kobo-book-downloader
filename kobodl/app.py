@@ -42,7 +42,7 @@ def getUserBooks(userid):
     user = Globals.Settings.UserList.getUser(userid)
     if not user:
         abort(404)
-    books = actions.ListBooks([user], False)
+    books = actions.ListBooks([user], False, None)
     return render_template('books.j2', books=books)
 
 
@@ -64,5 +64,5 @@ def downloadBook(userid, productid):
 @app.route('/book', methods=['GET'])
 def books():
     userlist = Globals.Settings.UserList.users
-    books = actions.ListBooks(userlist, False)
+    books = actions.ListBooks(userlist, False, None)
     return render_template('books.j2', books=books)
