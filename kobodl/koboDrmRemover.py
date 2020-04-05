@@ -1,18 +1,17 @@
-from Crypto.Cipher import AES
-from Crypto.Util import Padding
-
-from typing import Dict
 import base64
 import binascii
 import hashlib
 import zipfile
+from typing import Dict
+
+from Crypto.Cipher import AES
+from Crypto.Util import Padding
+
 
 # Based on obok.py by Physisticated.
 class KoboDrmRemover:
     def __init__(self, deviceId: str, userId: str):
-        self.DeviceIdUserIdKey = KoboDrmRemover.__MakeDeviceIdUserIdKey(
-            deviceId, userId
-        )
+        self.DeviceIdUserIdKey = KoboDrmRemover.__MakeDeviceIdUserIdKey(deviceId, userId)
 
     @staticmethod
     def __MakeDeviceIdUserIdKey(deviceId: str, userId: str) -> bytes:
@@ -29,9 +28,7 @@ class KoboDrmRemover:
         decryptedContents = contentAes.decrypt(contents)
         return Padding.unpad(decryptedContents, AES.block_size, "pkcs7")
 
-    def RemoveDrm(
-        self, inputPath: str, outputPath: str, contentKeys: Dict[str, str]
-    ) -> None:
+    def RemoveDrm(self, inputPath: str, outputPath: str, contentKeys: Dict[str, str]) -> None:
         with zipfile.ZipFile(inputPath, "r") as inputZip:
             with zipfile.ZipFile(outputPath, "w", zipfile.ZIP_DEFLATED) as outputZip:
                 for filename in inputZip.namelist():

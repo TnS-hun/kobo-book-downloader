@@ -7,10 +7,7 @@ from kobodl.settings import Settings
 
 @click.group()
 @click.option(
-    '--fmt',
-    type=click.STRING,
-    default='simple',
-    help='python-tabulate table format string',
+    '--fmt', type=click.STRING, default='simple', help='python-tabulate table format string',
 )
 @click.option(
     '--config',
@@ -42,7 +39,4 @@ def serve(ctx, host, port, debug, output_dir):
 
 cli.add_command(serve)
 
-from kobodl.commands import (  # noqa: F401 E402
-    user,
-    book,
-)
+from kobodl.commands import book, user  # isort:skip noqa: F401 E402

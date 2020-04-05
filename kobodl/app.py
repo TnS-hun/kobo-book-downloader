@@ -1,11 +1,10 @@
 import os
 
-from flask import abort, Flask, render_template, request, redirect, send_from_directory
+from flask import Flask, abort, redirect, render_template, request, send_from_directory
 
 from kobodl import actions
 from kobodl.globals import Globals
 from kobodl.settings import User
-
 
 app = Flask(__name__)
 
@@ -59,9 +58,7 @@ def downloadBook(userid, productid):
     absOutputDir, tail = os.path.split(outputFileName)
     # send_from_directory must be given an absolute path to avoid confusion
     # (relative paths are relative to root_path, not working dir)
-    return send_from_directory(
-        absOutputDir, tail, as_attachment=True, attachment_filename=tail
-    )
+    return send_from_directory(absOutputDir, tail, as_attachment=True, attachment_filename=tail)
 
 
 @app.route('/book', methods=['GET'])

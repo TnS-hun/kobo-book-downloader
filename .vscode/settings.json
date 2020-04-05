@@ -1,0 +1,14 @@
+{
+  "python.pythonPath": "venv/bin/python3",
+  "python.formatting.provider": "black",
+  "[python]": {
+    "editor.formatOnSave": true,
+    // https://github.com/Microsoft/vscode-python/issues/2301
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": true,
+    },
+  },
+  "[markdown]": {
+    "editor.formatOnSave": false,
+  },
+}

@@ -1,17 +1,16 @@
-from typing import Dict, Tuple
 import base64
+import dataclasses
 import html
 import os
 import re
+import sys
 import urllib
 import uuid
 from shutil import copyfile
-import sys
+from typing import Dict, Tuple
 
-import dataclasses
-from dataclasses_json import dataclass_json
 import requests
-
+from dataclasses_json import dataclass_json
 
 from kobodl.globals import Globals
 from kobodl.koboDrmRemover import KoboDrmRemover
@@ -83,9 +82,7 @@ class Kobo:
         self.user.AccessToken = jsonResponse["AccessToken"]
         self.user.RefreshToken = jsonResponse["RefreshToken"]
         if not self.user.AreAuthenticationSettingsSet():
-            raise KoboException(
-                "Authentication settings are not set after authentication refresh."
-            )
+            raise KoboException("Authentication settings are not set after authentication refresh.")
 
         Globals.Settings.Save()
 
@@ -137,9 +134,7 @@ class Kobo:
 
         # The link can be found in the response ('<a class="kobo-link partner-option kobo"') but this will do for now.
         parsed = urllib.parse.urlparse(signInUrl)
-        koboSignInUrl = parsed._replace(
-            query=None, path="/ww/en/signin/signin/kobo"
-        ).geturl()
+        koboSignInUrl = parsed._replace(query=None, path="/ww/en/signin/signin/kobo").geturl()
 
         match = re.search(r"""\?workflowId=([^"]{36})""", htmlResponse)
         if match is None:
@@ -180,9 +175,7 @@ class Kobo:
         return bookList, syncToken
 
     def __GetContentAccessBook(self, productId: str, displayProfile: str) -> dict:
-        url = self.InitializationSettings["content_access_book"].replace(
-            "{ProductId}", productId
-        )
+        url = self.InitializationSettings["content_access_book"].replace("{ProductId}", productId)
         params = {"DisplayProfile": displayProfile}
         headers = self.__GetHeaderWithAccessToken()
         hooks = self.__GetReauthenticationHook()
@@ -273,9 +266,7 @@ class Kobo:
         for item in data['Spine']:
             fileNum = int(item['Id']) + 1
             response = self.Session.get(item['Url'], stream=True)
-            filePath = os.path.join(
-                outputPath, str(fileNum) + '.' + item['FileExtension']
-            )
+            filePath = os.path.join(outputPath, str(fileNum) + '.' + item['FileExtension'])
             with open(filePath, "wb") as f:
                 for chunk in response.iter_content(chunk_size=1024 * 256):
                     f.write(chunk)
@@ -306,9 +297,7 @@ class Kobo:
         if len(userKey) > 0:
             postData["UserKey"] = userKey
 
-        response = self.Session.post(
-            "https://storeapi.kobo.com/v1/auth/device", json=postData
-        )
+        response = self.Session.post("https://storeapi.kobo.com/v1/auth/device", json=postData)
         response.raise_for_status()
         jsonResponse = response.json()
 
@@ -321,9 +310,7 @@ class Kobo:
         self.user.AccessToken = jsonResponse["AccessToken"]
         self.user.RefreshToken = jsonResponse["RefreshToken"]
         if not self.user.AreAuthenticationSettingsSet():
-            raise KoboException(
-                "Authentication settings are not set after device authentication."
-            )
+            raise KoboException("Authentication settings are not set after device authentication.")
 
         if len(userKey) > 0:
             self.user.UserKey = jsonResponse["UserKey"]
@@ -352,16 +339,10 @@ class Kobo:
                     )
                     copyfile(temporaryOutputPath, outputPath + ".ade")
                 else:
-                    contentAccessBook = self.__GetContentAccessBook(
-                        revisionId, self.DisplayProfile
-                    )
+                    contentAccessBook = self.__GetContentAccessBook(revisionId, self.DisplayProfile)
                     contentKeys = Kobo.__GetContentKeys(contentAccessBook)
-                    drmRemover = KoboDrmRemover(
-                        self.user.DeviceId, self.user.UserId
-                    )
-                    drmRemover.RemoveDrm(
-                        temporaryOutputPath, outputPath, contentKeys
-                    )
+                    drmRemover = KoboDrmRemover(self.user.DeviceId, self.user.UserId)
+                    drmRemover.RemoveDrm(temporaryOutputPath, outputPath, contentKeys)
                 os.remove(temporaryOutputPath)
             else:
                 if not isAudiobook:
@@ -380,9 +361,7 @@ class Kobo:
     def GetMyBookList(self) -> list:
 
         if not self.user.AreAuthenticationSettingsSet():
-            raise NotAuthenticatedException(
-                f'User {self.user.Email} is not authenticated'
-            )
+            raise NotAuthenticatedException(f'User {self.user.Email} is not authenticated')
 
         fullBookList = []
         syncToken = ""
@@ -408,9 +387,7 @@ class Kobo:
                 "PageSize": 100,  # 100 is the default if PageSize is not specified.
             }
 
-            response = self.Session.get(
-                url, params=params, headers=headers, hooks=hooks
-            )
+            response = self.Session.get(url, params=params, headers=headers, hooks=hooks)
             response.raise_for_status()
             wishList = response.json()
 
@@ -423,12 +400,8 @@ class Kobo:
         return items
 
     def GetBookInfo(self, productId: str) -> dict:
-        audiobook_url = self.InitializationSettings["audiobook"].replace(
-            "{ProductId}", productId
-        )
-        ebook_url = self.InitializationSettings["book"].replace(
-            "{ProductId}", productId
-        )
+        audiobook_url = self.InitializationSettings["audiobook"].replace("{ProductId}", productId)
+        ebook_url = self.InitializationSettings["book"].replace("{ProductId}", productId)
         headers = self.__GetHeaderWithAccessToken()
         hooks = self.__GetReauthenticationHook()
 
@@ -459,11 +432,7 @@ class Kobo:
             raise err
 
     def Login(self, email: str, password: str, captcha: str) -> None:
-        (
-            signInUrl,
-            workflowId,
-            requestVerificationToken,
-        ) = self.__GetExtraLoginParameters()
+        (signInUrl, workflowId, requestVerificationToken,) = self.__GetExtraLoginParameters()
 
         postData = {
             "LogInModel.WorkflowId": workflowId,
