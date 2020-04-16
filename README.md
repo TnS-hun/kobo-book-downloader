@@ -22,7 +22,8 @@ kobodl preserves the features from [TnS-hun/kobo-book-downloader](https://github
 
 It adds several new features.
 
-* **audiobook support**; cli only for now.
+* **audiobook support**; command-line only for now.
+  * Use `kobodl book get`. There will not be a download button in the webpage for audiobooks because they consist of many large files.
 * **multi-user support**; fetch books for multiple accounts.
 * **web interface**; adds new browser gui (with flask)
 * [docker image](https://hub.docker.com/r/subdavis/kobodl)
@@ -53,19 +54,20 @@ with docker
 ``` bash
 # list users
 docker run --rm -it --user $(id -u):$(id -g) \
-  -v ${HOME}/.config/kobodl.json:/home/kobodl.json subdavis/kobodl \
-  --config /home/kobodl.json user list
+  -v ${HOME}/.config:/home/config \
+  subdavis/kobodl \
+  --config /home/config/kobodl.json user list
 
 # run http server
 docker run --rm -it --user $(id -u):$(id -g) \
   -p 5000:5000 \
-  -v ${HOME}/.config/kobodl.json:/home/kobodl.json \
-  -v ${PWD}/kobo_downloads:/home/downloads \
+  -v ${HOME}/.config:/home/config \
+  -v ${PWD}:/home/downloads \
   subdavis/kobodl \
-  --config /home/kobodl.json \
+  --config /home/config/kobodl.json \
   serve \
   --host 0.0.0.0 \
-  --output-dir /home/downloads
+  --output-dir /home/downloads/kobodl_downloads
 ```
 
 ## Usage
