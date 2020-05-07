@@ -57,7 +57,9 @@ def __GetBookMetadata(entitlement: dict) -> dict:
         return entitlement['BookMetadata']
     if 'AudiobookMetadata' in keys:
         return entitlement['AudiobookMetadata']
-    return None
+    raise ValueError(
+        f'Unknown Book Metadata Type.  Wanted "BookMetadata" or "AudiobookMetadata", found object: {entitlement}'
+    )
 
 
 def __IsBookArchived(newEntitlement: dict) -> bool:
