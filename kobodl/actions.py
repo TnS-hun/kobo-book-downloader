@@ -182,11 +182,11 @@ def GetBookOrBooks(user: User, outputPath: str, productId: str = '') -> Union[No
             continue
 
         bookMetadata, book_type = __GetBookMetadata(newEntitlement)
-        if bookMetadata is None:
+        if book_type is None:
             click.echo('Skipping book of unknown type')
             continue
 
-        elif bookMetadata == BookType.SUBSCRIPTION:
+        elif book_type == BookType.SUBSCRIPTION:
             click.echo('Skipping subscribtion entity')
             continue
 
