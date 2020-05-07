@@ -5,8 +5,13 @@ from typing import List, TextIO, Union
 import click
 
 from kobodl.globals import Globals
-from kobodl.kobo import Book, Kobo, KoboException, NotAuthenticatedException
+from kobodl.kobo import Book, BookType, Kobo, KoboException, NotAuthenticatedException
 from kobodl.settings import User
+
+SUPPORTED_BOOK_TYPES = [
+    BookType.EBOOK,
+    BookType.AUDIOBOOK,
+]
 
 
 def __GetBookAuthor(book: dict) -> str:
@@ -51,15 +56,17 @@ def __MakeFileNameForBook(bookMetadata: dict) -> str:
     return fileName
 
 
-def __GetBookMetadata(entitlement: dict) -> dict:
+def __GetBookMetadata(entitlement: dict) -> (dict, BookType):
     keys = entitlement.keys()
     if 'BookMetadata' in keys:
-        return entitlement['BookMetadata']
+        return entitlement['BookMetadata'], BookType.EBOOK
     if 'AudiobookMetadata' in keys:
-        return entitlement['AudiobookMetadata']
-    raise ValueError(
-        f'Unknown Book Metadata Type.  Wanted "BookMetadata" or "AudiobookMetadata", found object: {entitlement}'
-    )
+        return entitlement['AudiobookMetadata'], BookType.AUDIOBOOK
+    if 'BookSubscriptionEntitlement' in keys:
+        return entitlement['BookSubscriptionEntitlement'], BookType.SUBSCRIPTION
+    print(f'WARNING: unsupported object detected with contents {entitlement}')
+    print('Please open an issue at https://github.com/subdavis/kobo-book-downloader/issues')
+    return None, None
 
 
 def __IsBookArchived(newEntitlement: dict) -> bool:
@@ -69,10 +76,6 @@ def __IsBookArchived(newEntitlement: dict) -> bool:
     if 'AudiobookEntitlement' in keys:
         bookEntitlement = newEntitlement['AudiobookEntitlement']
     return bookEntitlement.get('IsRemoved', False)
-
-
-def __IsAudioBook(bookMetadata: dict) -> bool:
-    return 'Duration' in bookMetadata.keys()
 
 
 def __IsBookRead(newEntitlement: dict) -> bool:
@@ -113,15 +116,21 @@ def __GetBookList(kobo: Kobo, listAll: bool, exportFile: Union[TextIO, None]) ->
         if (not listAll) and __IsBookRead(newEntitlement):
             continue
 
-        bookMetadata = __GetBookMetadata(newEntitlement)
-        book = [
-            bookMetadata['RevisionId'],
-            bookMetadata['Title'],
-            __GetBookAuthor(bookMetadata),
-            __IsBookArchived(newEntitlement),
-            __IsAudioBook(bookMetadata),
-        ]
-        rows.append(book)
+        bookMetadata, book_type = __GetBookMetadata(newEntitlement)
+
+        if book_type is None:
+            click.echo('Skipping book of unknown type')
+            continue
+
+        elif book_type in SUPPORTED_BOOK_TYPES:
+            book = [
+                bookMetadata['RevisionId'],
+                bookMetadata['Title'],
+                __GetBookAuthor(bookMetadata),
+                __IsBookArchived(newEntitlement),
+                book_type == BookType.AUDIOBOOK,
+            ]
+            rows.append(book)
 
     rows = sorted(rows, key=lambda columns: columns[1].lower())
     return rows
@@ -172,10 +181,17 @@ def GetBookOrBooks(user: User, outputPath: str, productId: str = '') -> Union[No
         if newEntitlement is None:
             continue
 
-        bookMetadata = __GetBookMetadata(newEntitlement)
-        isAudiobook = __IsAudioBook(bookMetadata)
+        bookMetadata, book_type = __GetBookMetadata(newEntitlement)
+        if bookMetadata is None:
+            click.echo('Skipping book of unknown type')
+            continue
+
+        elif bookMetadata == BookType.SUBSCRIPTION:
+            click.echo('Skipping subscribtion entity')
+            continue
+
         fileName = __MakeFileNameForBook(bookMetadata)
-        if not isAudiobook:
+        if book_type == BookType.EBOOK:
             # Audiobooks go in sub-directories
             # but epub files go directly in outputPath
             fileName += '.epub'
@@ -196,7 +212,7 @@ def GetBookOrBooks(user: User, outputPath: str, productId: str = '') -> Union[No
             click.echo(f'Skipping archived book {fileName}')
             continue
 
-        kobo.Download(bookMetadata, isAudiobook, outputFilePath)
+        kobo.Download(bookMetadata, book_type == BookType.AUDIOBOOK, outputFilePath)
         click.echo(f'Downloaded {productId} to {outputFilePath}', err=True)
 
         if productId:

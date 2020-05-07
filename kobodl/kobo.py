@@ -6,6 +6,7 @@ import re
 import sys
 import urllib
 import uuid
+from enum import Enum
 from shutil import copyfile
 from typing import Dict, Tuple
 
@@ -26,6 +27,12 @@ class Book:
     Archived: bool
     Audiobook: bool
     Owner: User
+
+
+class BookType(Enum):
+    EBOOK = 1
+    AUDIOBOOK = 2
+    SUBSCRIPTION = 3
 
 
 class NotAuthenticatedException(Exception):
