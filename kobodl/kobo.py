@@ -457,8 +457,12 @@ class Kobo:
 
         match = re.search(r"'(kobo://UserAuthenticated\?[^']+)';", htmlResponse)
         if match is None:
+            with open('loginpage_error.html', 'w') as loginpagefile:
+                loginpagefile.write(htmlResponse)
             raise KoboException(
-                "Authenticated user URL can't be found. The page format might have changed."
+                "Authenticated user URL can't be found. The page format might have changed!\n"
+                "The bad page has been written to file 'loginpage_error.html'.  You should open"
+                " an issue on GitHub and attach this file for help: https://github.com/subdavis/kobo-book-downloader/issues"
             )
 
         url = match.group(1)

@@ -202,7 +202,8 @@ def GetBookOrBooks(user: User, outputPath: str, productId: str = '') -> Union[No
             click.echo(f'Skipping already downloaded book {outputFilePath}')
             continue
 
-        if productId and productId != Kobo.GetProductId(bookMetadata):
+        currentProductId = Kobo.GetProductId(bookMetadata)
+        if productId and productId != currentProductId:
             # user only asked for a single title,
             # and this is not the book they want
             continue
@@ -212,8 +213,21 @@ def GetBookOrBooks(user: User, outputPath: str, productId: str = '') -> Union[No
             click.echo(f'Skipping archived book {fileName}')
             continue
 
-        kobo.Download(bookMetadata, book_type == BookType.AUDIOBOOK, outputFilePath)
-        click.echo(f'Downloaded {productId} to {outputFilePath}', err=True)
+        try:
+            click.echo(f'Downloading {currentProductId} to {outputFilePath}', err=True)
+            kobo.Download(bookMetadata, book_type == BookType.AUDIOBOOK, outputFilePath)
+        except KoboException as e:
+            if productId:
+                raise e
+            else:
+                click.echo(
+                    (
+                        f'Skipping failed download for {currentProductId}: {str(e)}'
+                        '\n  -- Try downloading it as a single book to get the complete exception details'
+                        ' and open an issue on the project GitHub page: https://github.com/subdavis/kobo-book-downloader/issues'
+                    ),
+                    err=True,
+                )
 
         if productId:
             # TODO: support audiobook downloads from web

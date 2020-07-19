@@ -6,7 +6,6 @@
   <thead>
     <tr class="text-left">
       <th class="p-2 pl-4"> Email </th>
-      <th class="p-2 pl-4""> UserKey </th>
       <th class="p-2 pl-4""> DeviceId </th>
       <th class="p-2 pl-4""> Books </th>
     </tr>
@@ -15,7 +14,6 @@
     {% for user in users %}
     <tr class="p-2">
       <td class="border px-4 p-1">{{ user.Email }}</td>
-      <td class="border px-4 p-1">{{ user.UserKey }}</td>
       <td class="border px-4 p-1">{{ user.DeviceId }}</td>
       <td class="border px-4 p-1">
         <a href="/user/{{ user.UserKey }}/book" class="text-blue-700">books</a>
