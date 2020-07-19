@@ -7,27 +7,30 @@
       <th class="p-2 pl-4"> Title </th>
       <th class="p-2 pl-4"> Author </th>
       <th class="p-2 pl-4"> RevisionId </th>
-      <th class="p-2 pl-4"> Archived </th>
-      <th class="p-2 pl-4"> Audiobook </th>
       <th class="p-2 pl-4"> Owner </th>
     </tr>
   </thead>
   <tbody>
     {% for book in books %}
     <tr>
-      <td class="border px-4 p-1">{{ book.Title }}</td>
-      <td class="border px-4 p-1">{{ book.Author }}</td>
-      <td class="border px-4 p-1">{{ book.RevisionId }}</td>
-      <td class="border px-4 p-1">{{ book.Archived }}</td>
-      <td class="border px-4 p-1">{{ book.Audiobook }}</td>
-      <td class="border px-4 p-1">{{ book.Owner.Email }}</td>
       <td class="border px-4 p-1">
-        {% if book.Audiobook %}
-        <b>cli only</b>
+        {% if not book.Audiobook %}
+          <a
+            href="/user/{{ book.Owner.UserKey }}/book/{{ book.RevisionId }}"
+            class="text-blue-700"
+          >
+            {{ book.Title }}
+          </a>
         {% else %}
-        <a href="/user/{{ book.Owner.UserKey }}/book/{{ book.RevisionId }}" class="text-blue-700">💾</a>
+          {{ book.Title }} 🎧
+        {% endif %}
+        {% if book.Archived %}
+         🗃️
         {% endif %}
       </td>
+      <td class="border px-4 p-1">{{ book.Author }}</td>
+      <td class="border px-4 p-1">{{ book.RevisionId }}</td>
+      <td class="border px-4 p-1">{{ book.Owner.Email }}</td>
     </tr>
     {% endfor %}
   </tbody>
