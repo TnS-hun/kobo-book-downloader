@@ -33,7 +33,13 @@ It adds several new features.
 
 WebUI provides most of the same functions of the CLI. It was added to allow other members of a household to add their accounts to kobodl and access their books without having to set up python. An example of how to run kobodl on your server with systemd can be found at [subdavis/selfhosted](https://github.com/subdavis/selfhosted/blob/master/kobodl.service).
 
+### User page
+
 ![Example of User page](docs/webss.png)
+
+### Book list page
+
+![Example of book list page](docs/books.png)
 
 ## Installation
 
