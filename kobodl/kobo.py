@@ -11,6 +11,7 @@ from shutil import copyfile
 from typing import Dict, Tuple
 
 import requests
+from bs4 import BeautifulSoup
 from dataclasses_json import dataclass_json
 
 from kobodl.globals import Globals
@@ -457,13 +458,18 @@ class Kobo:
 
         match = re.search(r"'(kobo://UserAuthenticated\?[^']+)';", htmlResponse)
         if match is None:
-            with open('loginpage_error.html', 'w') as loginpagefile:
-                loginpagefile.write(htmlResponse)
-            raise KoboException(
-                "Authenticated user URL can't be found. The page format might have changed!\n"
-                "The bad page has been written to file 'loginpage_error.html'.  You should open"
-                " an issue on GitHub and attach this file for help: https://github.com/subdavis/kobo-book-downloader/issues"
-            )
+            soup = BeautifulSoup(htmlResponse, 'html.parser')
+            errors = soup.find(class_='validation-summary-errors')
+            if errors:
+                raise KoboException('Login Failure! ' + errors.text)
+            else:
+                with open('loginpage_error.html', 'w') as loginpagefile:
+                    loginpagefile.write(htmlResponse)
+                raise KoboException(
+                    "Authenticated user URL can't be found. The page format might have changed!\n"
+                    "The bad page has been written to file 'loginpage_error.html'.  You should open"
+                    " an issue on GitHub and attach this file for help: https://github.com/subdavis/kobo-book-downloader/issues"
+                )
 
         url = match.group(1)
         parsed = urllib.parse.urlparse(url)

@@ -2,7 +2,6 @@ import click
 from tabulate import tabulate
 
 from kobodl import actions, cli
-from kobodl.commands.utils import boolAsEmoji
 from kobodl.globals import Globals
 from kobodl.kobo import Kobo
 from kobodl.settings import User
@@ -17,18 +16,8 @@ def user():
 @click.pass_obj
 def list(ctx):
     userlist = Globals.Settings.UserList.users
-    headers = ['Email', 'UserKey', 'DeviceId', 'Authed']
-    data = sorted(
-        [
-            (
-                user.Email,
-                user.UserKey,
-                user.DeviceId,
-                boolAsEmoji(user.AreAuthenticationSettingsSet()),
-            )
-            for user in userlist
-        ]
-    )
+    headers = ['Email', 'UserKey', 'DeviceId']
+    data = sorted([(user.Email, user.UserKey, user.DeviceId,) for user in userlist])
     click.echo(tabulate(data, headers, tablefmt=ctx['fmt']))
 
 

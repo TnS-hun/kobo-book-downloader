@@ -4,8 +4,16 @@ import click
 from tabulate import tabulate
 
 from kobodl import actions, cli
-from kobodl.commands.utils import boolAsEmoji
 from kobodl.globals import Globals
+
+
+def decorators(book):
+    append = ''
+    if book.Audiobook:
+        append += ' (🎧 Audiobook)'
+    if book.Archived:
+        append += ' (🗄️ Archived)'
+    return append
 
 
 @click.group(name='book', short_help='list and download books')
@@ -85,17 +93,10 @@ def list(ctx, user, read, export_library):
     if user:
         userlist = [Globals.Settings.UserList.getUser(user)]
     books = actions.ListBooks(userlist, read, export_library)
-    headers = ['Title', 'Author', 'RevisionId', '🗃️', '🎧', 'Owner']
+    headers = ['Title', 'Author', 'RevisionId', 'Owner']
     data = sorted(
         [
-            (
-                book.Title,
-                book.Author,
-                book.RevisionId,
-                boolAsEmoji(book.Archived),
-                boolAsEmoji(book.Audiobook),
-                book.Owner.Email,
-            )
+            (book.Title + decorators(book), book.Author, book.RevisionId, book.Owner.Email,)
             for book in books
         ]
     )
