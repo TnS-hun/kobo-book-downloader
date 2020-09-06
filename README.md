@@ -1,4 +1,4 @@
-![kobodl logo](docs/banner.png)
+![kobodl logo](docs/kobodl.png)
 
 ![Docker Pulls](https://img.shields.io/docker/pulls/subdavis/kobodl)
 ![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/subdavis/kobodl)
