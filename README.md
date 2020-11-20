@@ -97,6 +97,9 @@ General usage
 # List books for a single user
 ~$ kobodl book list --user email@domain.com
 
+# List all books, including those marked as read
+~$ kobodl book list --read
+
 # Show book list help
 ~$ kobodl book list --help
 
