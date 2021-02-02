@@ -3,8 +3,8 @@ FROM python:3.9-alpine AS builder
 # Copy only setup.py to utilize build cache
 WORKDIR /home
 COPY setup.py README.md ./
-RUN apk add --no-cache gcc tini libc-dev \
-  && pip3 install .
+RUN apk add --no-cache gcc tini libc-dev
+RUN pip3 install .
 
 FROM python:3.9-alpine
 RUN apk add --no-cache tini
