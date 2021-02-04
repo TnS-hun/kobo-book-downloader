@@ -3,7 +3,7 @@ import os
 import click
 from tabulate import tabulate
 
-from kobodl import action, cli
+from kobodl import actions, cli
 from kobodl.globals import Globals
 
 
