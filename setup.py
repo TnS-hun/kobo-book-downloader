@@ -27,7 +27,9 @@ setup(
         'tabulate',
     ],
     license='MIT',
-    entry_points={'console_scripts': ['kobodl = kobodl:cli'],},
+    entry_points={
+        'console_scripts': ['kobodl = kobodl:cli'],
+    },
     python_requires='>=3.6',
     setup_requires=['setuptools-git'],
 )

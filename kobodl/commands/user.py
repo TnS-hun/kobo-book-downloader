@@ -17,7 +17,16 @@ def user():
 def list(ctx):
     userlist = Globals.Settings.UserList.users
     headers = ['Email', 'UserKey', 'DeviceId']
-    data = sorted([(user.Email, user.UserKey, user.DeviceId,) for user in userlist])
+    data = sorted(
+        [
+            (
+                user.Email,
+                user.UserKey,
+                user.DeviceId,
+            )
+            for user in userlist
+        ]
+    )
     click.echo(tabulate(data, headers, tablefmt=ctx['fmt']))
 
 

@@ -162,10 +162,10 @@ def Login(user: User, password: str, captcha: str) -> None:
 
 
 def GetBookOrBooks(user: User, outputPath: str, productId: str = '') -> Union[None, str]:
-    '''
+    """
     download 1 or all books to file
     returns output filepath if identifier is passed, otherwise returns None
-    '''
+    """
     outputPath = os.path.abspath(outputPath)
     kobo = Kobo(user)
     kobo.LoadInitializationSettings()
