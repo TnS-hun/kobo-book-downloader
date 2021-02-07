@@ -157,6 +157,20 @@ Adding a user requires a bit of hackery to get a reCAPTCHA code from Kobo's webs
 
 ![Gif explaining how to get reCAPTHCA](docs/captcha.gif)
 
+## Troubleshooting
+
+> Some of my books are missing!
+
+Try `kobodl book list --read` to show all "finished" and "archived" books.  You can manage your book status on [the library page](https://kobo.com/library).  Try changing the status using the "..." button.
+
+> I see a mesage about "skipping _____" when I download all.
+
+Try to download the book individually using `kobodl book get <revision-id>`, replacing `revision-id` with the UUID from the list table.
+
+> I can't log in.  I get a message saying "The page format might have changed"
+
+This happens from time to time, maybe once or twice a year.  Kobo changes their login page and makes it hard for the tool to parse out the necessary information.  Please open an issue.
+
 ## Development
 
 To get set up for development:
