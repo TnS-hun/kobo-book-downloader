@@ -96,7 +96,12 @@ def list(ctx, user, read, export_library):
     headers = ['Title', 'Author', 'RevisionId', 'Owner']
     data = sorted(
         [
-            (book.Title + decorators(book), book.Author, book.RevisionId, book.Owner.Email,)
+            (
+                book.Title + decorators(book),
+                book.Author,
+                book.RevisionId,
+                book.Owner.Email,
+            )
             for book in books
         ]
     )

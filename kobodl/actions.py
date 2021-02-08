@@ -1,6 +1,6 @@
 import json
 import os
-from typing import List, TextIO, Union
+from typing import List, TextIO, Tuple, Union
 
 import click
 
@@ -56,7 +56,7 @@ def __MakeFileNameForBook(bookMetadata: dict) -> str:
     return fileName
 
 
-def __GetBookMetadata(entitlement: dict) -> (dict, BookType):
+def __GetBookMetadata(entitlement: dict) -> Tuple[dict, BookType]:
     keys = entitlement.keys()
     if 'BookMetadata' in keys:
         return entitlement['BookMetadata'], BookType.EBOOK
@@ -71,6 +71,7 @@ def __GetBookMetadata(entitlement: dict) -> (dict, BookType):
 
 def __IsBookArchived(newEntitlement: dict) -> bool:
     keys = newEntitlement.keys()
+    bookEntitlement: dict = {}
     if 'BookEntitlement' in keys:
         bookEntitlement = newEntitlement['BookEntitlement']
     if 'AudiobookEntitlement' in keys:
@@ -162,10 +163,10 @@ def Login(user: User, password: str, captcha: str) -> None:
 
 
 def GetBookOrBooks(user: User, outputPath: str, productId: str = '') -> Union[None, str]:
-    '''
+    """
     download 1 or all books to file
     returns output filepath if identifier is passed, otherwise returns None
-    '''
+    """
     outputPath = os.path.abspath(outputPath)
     kobo = Kobo(user)
     kobo.LoadInitializationSettings()

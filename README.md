@@ -176,9 +176,8 @@ This happens from time to time, maybe once or twice a year.  Kobo changes their 
 To get set up for development:
 
 1. clone this repo
-2. create a virtual environment (optional)
-3. `pip3 install -e .` to install for development
-4. `kobodl` should be available inside the virtual env
+1. create a virtual environment named `kobodl` with pyenv (optional)
+1. `kobodl` should be available inside the virtual env
 
 ## Linting
 

@@ -440,7 +440,11 @@ class Kobo:
             raise err
 
     def Login(self, email: str, password: str, captcha: str) -> None:
-        (signInUrl, workflowId, requestVerificationToken,) = self.__GetExtraLoginParameters()
+        (
+            signInUrl,
+            workflowId,
+            requestVerificationToken,
+        ) = self.__GetExtraLoginParameters()
 
         postData = {
             "LogInModel.WorkflowId": workflowId,

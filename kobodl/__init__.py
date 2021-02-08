@@ -7,7 +7,10 @@ from kobodl.settings import Settings
 
 @click.group()
 @click.option(
-    '--fmt', type=click.STRING, default='simple', help='python-tabulate table format string',
+    '--fmt',
+    type=click.STRING,
+    default='simple',
+    help='python-tabulate table format string',
 )
 @click.option(
     '--config',
