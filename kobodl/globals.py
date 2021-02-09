@@ -1,5 +1,7 @@
+from typing import Union
+
 from kobodl.settings import Settings
 
 
 class Globals:
-    Settings = None
+    Settings: Union[Settings, None] = None
