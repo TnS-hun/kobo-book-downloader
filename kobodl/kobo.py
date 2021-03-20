@@ -463,16 +463,19 @@ class Kobo:
         match = re.search(r"'(kobo://UserAuthenticated\?[^']+)';", htmlResponse)
         if match is None:
             soup = BeautifulSoup(htmlResponse, 'html.parser')
-            errors = soup.find(class_='validation-summary-errors')
+            errors = soup.find(class_='validation-summary-errors') or soup.find(
+                class_='field-validation-error'
+            )
             if errors:
                 raise KoboException('Login Failure! ' + errors.text)
             else:
                 with open('loginpage_error.html', 'w') as loginpagefile:
                     loginpagefile.write(htmlResponse)
                 raise KoboException(
-                    "Authenticated user URL can't be found. The page format might have changed!\n"
-                    "The bad page has been written to file 'loginpage_error.html'.  You should open"
-                    " an issue on GitHub and attach this file for help: https://github.com/subdavis/kobo-book-downloader/issues"
+                    "Authenticated user URL can't be found. The page format might have changed!\n\n"
+                    "The bad page has been written to file 'loginpage_error.html'.  \n"
+                    "You should open an issue on GitHub and attach this file for help: https://github.com/subdavis/kobo-book-downloader/issues\n"
+                    "Please be sure to remove any personally identifying information from the file."
                 )
 
         url = match.group(1)

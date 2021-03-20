@@ -17,14 +17,14 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
-        'beautifulsoup4',
+        'beautifulsoup4<5.0.0',
         'click<8',
-        'dataclasses',
-        'dataclasses-json',
+        'dataclasses<1.0.0',
+        'dataclasses-json<0.6.0',
         'flask>=1.1.0',
         'pycryptodome<4',
         'requests>=2.25',
-        'tabulate',
+        'tabulate<0.9.0',
     ],
     license='MIT',
     entry_points={

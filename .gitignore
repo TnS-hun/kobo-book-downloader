@@ -2,6 +2,8 @@
 *.pyc
 *.egg-info/
 .eggs/
+.vscode/
+loginpage_error.html
 venv/
 kobo_downloads/
 build/
