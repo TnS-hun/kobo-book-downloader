@@ -32,7 +32,9 @@ It adds several new features.
 
 ## Web UI
 
-WebUI provides most of the same functions of the CLI. It was added to allow other members of a household to add their accounts to kobodl and access their books without having to set up python. An example of how to run kobodl on your server with systemd can be found at [subdavis/selfhosted](https://github.com/subdavis/selfhosted/blob/master/kobodl.service).
+WebUI provides most of the same functions of the CLI. It was added to allow other members of a household to add their accounts to kobodl and access their books without having to set up python.
+
+[See my **docker-compose** example](https://github.com/subdavis/selfhosted/blob/main/docker-compose.yml)
 
 ### User page
 
