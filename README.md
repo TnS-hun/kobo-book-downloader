@@ -40,7 +40,7 @@ WebUI provides most of the same functions of the CLI. It was added to allow othe
 
 ### Book list page
 
-![Example of book list page](docs/books.png)
+![Example of book list page](docs/books3.png)
 
 ## Installation
 
