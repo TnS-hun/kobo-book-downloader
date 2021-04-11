@@ -29,7 +29,7 @@ If applicable, add screenshots to help explain your problem.
 **Desktop (please complete the following information):**
  - OS: [e.g.  MacOS]
 -  Install method and python version: [eg. docker, python 3.9]
- - Kobodl Version [e.g. 0.5.1]
+ - Kobodl Version [e.g. 0.6.0]
 
 **Additional context**
 Add any other context about the problem here.

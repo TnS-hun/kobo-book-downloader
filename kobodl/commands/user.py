@@ -50,21 +50,25 @@ def add(ctx, email, password):
     user = User(Email=email)
     click.echo(
         """
-    Open https://authorize.kobo.com/signin in a private/incognito window in your browser, wait till the page
-    loads (do not login!) then open the developer tools (use F12 in Firefox/Chrome), select the console tab,
-    and paste the following code there and then press Enter there in the browser.
+    1. Open https://authorize.kobo.com/signin in a private/incognito window in your browser.
+    2. wait till the page loads (do not login!)
+    3. open the developer tools (use F12 in Firefox/Chrome, or right-click and choose "inspect")
+    4. select the console tab,
+    5. copy-paste the following code to the console there and then press Enter.
 
-    var newCaptchaDiv = document.createElement( "div" );
-    newCaptchaDiv.id = "new-grecaptcha-container";
-    document.getElementById( "grecaptcha-container" ).insertAdjacentElement( "afterend", newCaptchaDiv );
-    grecaptcha.render( newCaptchaDiv.id, {
-        sitekey: "6Le_Hc8ZAAAAAO6IMIG5zdDmANbljtXY4EHK0wzD",
-        callback: function( response ) { console.log( "Captcha response:" ); console.log( response ); }
-    } );
+    var newCaptchaDiv = document.createElement("div");
+    newCaptchaDiv.id = "new-hcaptcha-container";
+    var siteKey = document.getElementById('hcaptcha-container').getAttribute('data-sitekey');
+    document.body.replaceChildren(newCaptchaDiv);
+    grecaptcha.render(newCaptchaDiv.id, {
+        sitekey: siteKey,
+        callback: function(r) {console.log("Captcha response:");console.log(r);}
+    });
+    console.log('Click the checkbox to get the code');
 
     A captcha should show up below the Sign-in form. Once you solve the captcha its response will be written
     below the pasted code in the browser's console. Copy the response (the line below "Captcha response:")
-    and paste it here.
+    and paste it here.  It will be very long!
     """
     )
     captcha = input('Captcha response: ').strip()

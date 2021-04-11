@@ -18,17 +18,19 @@
   <div class="flex flex-wrap items-start">
     <img class="mr-4" width="580px" src="https://raw.githubusercontent.com/subdavis/kobo-book-downloader/master/docs/captcha.gif">
     <div class="flex-shrink rounded px-4 overflow-x-auto text-xs whitespace-pre font-mono" style="background-color: #f5f2f0; min-width: 420px;">
-var newCaptchaDiv = document.createElement( "div" );
-newCaptchaDiv.id = "new-grecaptcha-container";
-document.getElementById( "grecaptcha-container" )
-  .insertAdjacentElement( "afterend", newCaptchaDiv );
+var newCaptchaDiv = document.createElement("div");
+newCaptchaDiv.id = "new-hcaptcha-container";
+var siteKey = document.getElementById('hcaptcha-container')
+  .getAttribute('data-sitekey');
+document.body.replaceChildren(newCaptchaDiv);
 grecaptcha.render( newCaptchaDiv.id, {
-  sitekey: "6Le_Hc8ZAAAAAO6IMIG5zdDmANbljtXY4EHK0wzD",
-  callback: function( response ) {
-    console.log( "Captcha response:" );
-    console.log( response );
-  }
-});</code></pre>
+    sitekey: siteKey,
+    callback: function(r) {
+      console.log("Captcha response:");
+      console.log(r);
+    }
+});
+console.log('Click the checkbox to get the code');</code></pre>
     </div>
   </div>
 </div>
