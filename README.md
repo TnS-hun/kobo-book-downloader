@@ -1,8 +1,5 @@
 ![kobodl logo](docs/kobodl.png)
 
-![Docker Pulls](https://img.shields.io/docker/pulls/subdavis/kobodl)
-![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/subdavis/kobodl)
-![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/subdavis/kobodl)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/kobodl)
 ![PyPI - License](https://img.shields.io/pypi/l/kobodl)
 ![PyPI](https://img.shields.io/pypi/v/kobodl)
@@ -27,7 +24,7 @@ It adds several new features.
 * **multi-user support**; fetch books for multiple accounts.
 * **web interface**; adds new browser gui (with flask)
 * **CalibreWeb Integration**; send books directly to CalibreWeb from the web interface.
-* [docker image](https://hub.docker.com/r/subdavis/kobodl)
+* [docker image](https://github.com/subdavis/kobodl/pkgs/container/kobodl)
 * [pypi package](https://pypi.org/project/kobodl/)
 
 ## Web UI
@@ -64,7 +61,7 @@ with docker
 # list users
 docker run --rm -it --user $(id -u):$(id -g) \
   -v ${HOME}/.config:/home/config \
-  subdavis/kobodl \
+  ghcr.io/subdavis/kobodl \
   --config /home/config/kobodl.json user list
 
 # run http server
@@ -72,7 +69,7 @@ docker run --rm -it --user $(id -u):$(id -g) \
   -p 5000:5000 \
   -v ${HOME}/.config:/home/config \
   -v ${PWD}:/home/downloads \
-  subdavis/kobodl \
+  ghcr.io/subdavis/kobodl \
   --config /home/config/kobodl.json \
   serve \
   --host 0.0.0.0 \
@@ -210,18 +207,6 @@ VS Code is configured to do this for you. Otherwise, run the following:
 pip3 install -r dev-requirements.txt
 isort -rc kobodl/*
 black .
-```
-
-## Release
-
-First, update setup.py's version, then run the following
-
-``` bash
-docker build -t subdavis/kobodl .
-docker push subdavis/kobodl
-
-python3 setup.py sdist bdist_wheel
-twine upload dist/*
 ```
 
 ## Notes
