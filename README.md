@@ -1,8 +1,10 @@
 ![kobodl logo](docs/kobodl.png)
 
-![PyPI - Downloads](https://img.shields.io/pypi/dm/kobodl)
-![PyPI - License](https://img.shields.io/pypi/l/kobodl)
-![PyPI](https://img.shields.io/pypi/v/kobodl)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/subdavis/kobo-book-downloader/Publish%20Docker%20Container?style=for-the-badge)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/subdavis/kobo-book-downloader?style=for-the-badge)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/kobodl?style=for-the-badge)
+![PyPI - License](https://img.shields.io/pypi/l/kobodl?style=for-the-badge)
+![PyPI](https://img.shields.io/pypi/v/kobodl?style=for-the-badge)
 
 # kobodl
 
