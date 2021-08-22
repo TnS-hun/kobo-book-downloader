@@ -28,6 +28,7 @@ It adds several new features.
 * **CalibreWeb Integration**; send books directly to CalibreWeb from the web interface.
 * [docker image](https://github.com/subdavis/kobodl/pkgs/container/kobodl)
 * [pypi package](https://pypi.org/project/kobodl/)
+* [pyinstaller bundles](https://github.com/subdavis/kobo-book-downloader/releases/latest)
 
 ## Web UI
 
@@ -45,19 +46,37 @@ WebUI provides most of the same functions of the CLI. It was added to allow othe
 
 ## Installation
 
-with pipx
+### Pre-built bundles
+
+Simply download the appropriate executable from [the latest release assets](https://github.com/subdavis/kobo-book-downloader/releases/latest) and run it from the command line.
+
+``` bash
+# Linux and MacOS BASH example (pick appropriate URL)
+wget https://github.com/subdavis/kobo-book-downloader/releases/latest/download/kobodl-ubuntu-latest # linux
+wget https://github.com/subdavis/kobo-book-downloader/releases/latest/download/kobodl-macos-latest # macos
+chmod +x kobodl-ubuntu-latest
+./kobodl-ubuntu-latest
+```
+
+``` powershell
+# Windows Powershell example
+wget "https://github.com/subdavis/kobo-book-downloader/releases/latest/download/kobodl-windows-latest.exe" -outfile "kobodl.exe"
+./kobodl.exe
+```
+
+### pipx
 
 ``` bash
 pipx install kobodl
 ```
 
-with pypi
+### pypi
 
 ``` bash
 pip3 install kobodl
 ```
 
-with docker
+### docker
 
 ``` bash
 # list users
