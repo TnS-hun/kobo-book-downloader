@@ -25,14 +25,21 @@ jobs:
 
   pyinstaller:
     name: Build for multiple platforms
-    runs-on: ${{ matrix.config.os }}
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        config:
-          - os: windows-latest
-          - os: macos-latest
-          - os: ubuntu-latest
+        os: ["windows-latest", "macos-latest", "ubuntu-latest"]
         python-version: [3.8]
+        include:
+          -
+            os: windows-latest
+            name: windows
+          -
+            os: macos-latest
+            name: macos
+          -
+            os: ubuntu-latest
+            name: ubuntu
 
     steps:
       -
@@ -48,7 +55,7 @@ jobs:
           python -m pip install --upgrade pip;
           pip install tox;
       -
-        run: tox -e buildcli -- --name kobodl-${{ matrix.config.os }}
+        run: tox -e buildcli -- --name kobodl-${{ matrix.name }}
       - 
         name: Upload Release Asset
         uses: alexellis/upload-assets@0.3.0

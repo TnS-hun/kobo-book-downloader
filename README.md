@@ -64,21 +64,21 @@ No python installation necessary.  Simply download the appropriate executable fr
 
 ``` bash
 # Linux
-wget https://github.com/subdavis/kobo-book-downloader/releases/latest/download/kobodl-ubuntu-latest
+wget https://github.com/subdavis/kobo-book-downloader/releases/latest/download/kobodl-ubuntu
 chmod +x kobodl-ubuntu-latest
 ./kobodl-ubuntu-latest
 ```
 
 ``` bash
 # MacOS (Catalina 10.15 or newer required.  For older versions, use the pip or docker install option)
-wget https://github.com/subdavis/kobo-book-downloader/releases/latest/download/kobodl-macos-latest
+wget https://github.com/subdavis/kobo-book-downloader/releases/latest/download/kobodl-macos
 chmod +x kobodl-macos-latest
 ./kobodl-macos-latest
 ```
 
 ``` powershell
 # Windows Powershell example
-wget "https://github.com/subdavis/kobo-book-downloader/releases/latest/download/kobodl-windows-latest.exe" -outfile "kobodl.exe"
+wget "https://github.com/subdavis/kobo-book-downloader/releases/latest/download/kobodl-windows.exe" -outfile "kobodl.exe"
 ./kobodl.exe
 ```
 
