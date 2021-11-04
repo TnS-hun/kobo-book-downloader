@@ -51,11 +51,17 @@ WebUI provides most of the same functions of the CLI. It was added to allow othe
 Simply download the appropriate executable from [the latest release assets](https://github.com/subdavis/kobo-book-downloader/releases/latest) and run it from the command line.
 
 ``` bash
-# Linux and MacOS BASH example (pick appropriate URL)
-wget https://github.com/subdavis/kobo-book-downloader/releases/latest/download/kobodl-ubuntu-latest # linux
-wget https://github.com/subdavis/kobo-book-downloader/releases/latest/download/kobodl-macos-latest # macos
+# Linux
+wget https://github.com/subdavis/kobo-book-downloader/releases/latest/download/kobodl-ubuntu-latest
 chmod +x kobodl-ubuntu-latest
 ./kobodl-ubuntu-latest
+```
+
+``` bash
+# MacOS (Catalina 10.15 or newer required.  For older versions, use the pip or docker install option)
+wget https://github.com/subdavis/kobo-book-downloader/releases/latest/download/kobodl-macos-latest
+chmod +x kobodl-macos-latest
+./kobodl-macos-latest
 ```
 
 ``` powershell
