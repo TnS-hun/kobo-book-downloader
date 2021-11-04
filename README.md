@@ -46,9 +46,21 @@ WebUI provides most of the same functions of the CLI. It was added to allow othe
 
 ## Installation
 
+### pipx
+
+``` bash
+pipx install kobodl
+```
+
+### pip
+
+``` bash
+pip install kobodl
+```
+
 ### Pre-built bundles
 
-Simply download the appropriate executable from [the latest release assets](https://github.com/subdavis/kobo-book-downloader/releases/latest) and run it from the command line.
+No python installation necessary.  Simply download the appropriate executable from [the latest release assets](https://github.com/subdavis/kobo-book-downloader/releases/latest) and run it from the command line.  Pre-built bundles are CLI-only (no web server) so use a different install option if you want that feature.
 
 ``` bash
 # Linux
@@ -68,18 +80,6 @@ chmod +x kobodl-macos-latest
 # Windows Powershell example
 wget "https://github.com/subdavis/kobo-book-downloader/releases/latest/download/kobodl-windows-latest.exe" -outfile "kobodl.exe"
 ./kobodl.exe
-```
-
-### pipx
-
-``` bash
-pipx install kobodl
-```
-
-### pypi
-
-``` bash
-pip3 install kobodl
 ```
 
 ### docker
