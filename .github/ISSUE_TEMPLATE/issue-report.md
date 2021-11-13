@@ -8,7 +8,7 @@ assignees: ''
 ---
 
 **Before you open an issue**
-Please make sure you've upgraded to the latest version of kobodl on [pypi](https://pypi.org/project/kobodl/) or [docker](https://hub.docker.com/r/subdavis/kobodl)
+Please make sure you've upgraded to the latest version of kobodl on [pypi](https://pypi.org/project/kobodl/) or [docker](https://hub.docker.com/r/subdavis/kobodl).  Also read through the [troubleshooting guide](https://github.com/subdavis/kobo-book-downloader#troubleshooting).
 
 **Describe the issue**
 A clear and concise description of what the bug is.
