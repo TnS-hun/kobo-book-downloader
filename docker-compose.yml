@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  kobodl:
+    image: ghcr.io/subdavis/kobodl:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: kobodl
+    restart: unless-stopped
+    user: ${PUID:-1000}
+    ports:
+      - "5000:5000"
+    volumes:
+      # These mappings will be the same for command line and web server
+      - ${HOME}/.config/kobodl.json:/home/kobodl.json
+      - ${HOME}/kobodl/downloads:/home/downloads
+    command: --config /home/kobodl.json serve -h 0.0.0.0 -p 5000 --output-dir /home/downloads

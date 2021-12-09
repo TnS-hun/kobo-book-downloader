@@ -34,8 +34,6 @@ It adds several new features.
 
 WebUI provides most of the same functions of the CLI. It was added to allow other members of a household to add their accounts to kobodl and access their books without having to set up python.
 
-[See my **docker-compose** example](https://github.com/subdavis/selfhosted/blob/main/docker-compose.yml)
-
 ### User page
 
 ![Example of User page](docs/webss.png)
@@ -104,6 +102,8 @@ docker run --rm -it --user $(id -u):$(id -g) \
   --host 0.0.0.0 \
   --output-dir /home/downloads/kobodl_downloads
 ```
+
+[Also see the **docker-compose** example file.](./docker-compose.yml)
 
 ## Usage
 
