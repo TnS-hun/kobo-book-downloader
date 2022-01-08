@@ -107,7 +107,9 @@ docker run --rm -it --user $(id -u):$(id -g) \
 
 ## Usage
 
-General usage
+General usage documentation.
+
+> **Note**: These are commands you type into a shell prompt like Terminal (Ubuntu, MacOS) or Powershell or CMD (Windows).  You may need to replace `kobodl` with `./kobodl.exe`, `./kobodl-macos-latest`, or something else, depending on which installation method you chose.
 
 ``` bash
 # Get started by adding one or more users
