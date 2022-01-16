@@ -1,3 +1,16 @@
+# Alternatives to kobodl
+
+I used to prefer `kobodl` because it's **standalone**, which means you don't need other proprietary software like Adobe Digial Editions or Kindle for PC (that I can't use on Linux). However, I have since discoverd a way to do this with [Calibre](https://github.com/kovidgoyal/calibre) and 2 plugins:
+
+* [Leseratte10/acsm-calibre-plugin](https://github.com/Leseratte10/acsm-calibre-plugin) - A plugin that can read Adobe Digital Editions files that Kobo web download produces.
+* [noDRM/DeDRM_tools](https://github.com/noDRM/DeDRM_tools) - The popular DRM removal plugin.
+
+Now you can just download the `.acm` file from your book list on Kobo.com and load it into Calibre desktop!
+
+It doesn't work with audiobooks and is a little harder to set up, but I think it's overall a better solution and I am not using kobodl personally much anymore. If anyone is interested in becoming a new maintainer of kobodl please let me know by opening a [discussion](https://github.com/subdavis/kobo-book-downloader/discussions).  I will still try to keep it functioning as long as I can, and bug reports are still appreciated.
+
+---
+
 ![kobodl logo](docs/kobodl.png)
 
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/subdavis/kobo-book-downloader/Publish%20Docker%20Container?style=for-the-badge)
