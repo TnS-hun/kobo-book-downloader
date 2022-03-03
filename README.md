@@ -1,4 +1,8 @@
-# Alternatives to kobodl
+# kobodl is no longer working
+
+See [this issue](https://github.com/subdavis/kobo-book-downloader/issues/76) for a discussion about why.
+
+## Alternatives to kobodl
 
 I used to prefer `kobodl` because it's **standalone**, which means you don't need other proprietary software like Adobe Digial Editions or Kindle for PC (that I can't use on Linux). However, I have since discoverd a way to do this with [Calibre](https://github.com/kovidgoyal/calibre) and 2 plugins:
 
