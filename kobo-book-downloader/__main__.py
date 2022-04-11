@@ -5,10 +5,11 @@ from Settings import Settings
 
 import argparse
 
-def Initialize() -> None:
+def InitializeGlobals() -> None:
 	Globals.Kobo = Kobo()
 	Globals.Settings = Settings()
 
+def InitializeKoboApi() -> None:
 	if not Globals.Settings.AreAuthenticationSettingsSet():
 		Globals.Kobo.AuthenticateDevice()
 
@@ -63,12 +64,16 @@ def Main() -> None:
 		Commands.ShowUsage()
 		return
 
-	Initialize()
+	InitializeGlobals()
+
+	if arguments.Command == "info":
+		Commands.Info()
+		return
+
+	InitializeKoboApi()
 
 	if arguments.Command == "get":
 		Commands.GetBookOrBooks( arguments.RevisionId, arguments.OutputPath, arguments.all )
-	elif arguments.Command == "info":
-		Commands.Info()
 	elif arguments.Command == "list":
 		Commands.ListBooks( arguments.all )
 	elif arguments.Command == "pick":
