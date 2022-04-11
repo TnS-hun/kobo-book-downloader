@@ -43,6 +43,12 @@ def ReauthenticationHook( r, *args, **kwargs ):
 
 	return _r
 
+class SessionWithTimeOut( requests.Session ):
+	def request( self, method, url, **kwargs ):
+		if "timeout" not in kwargs:
+			kwargs[ "timeout" ] = 30 # 30 seconds
+		return super().request( method, url, **kwargs )
+
 class Kobo:
 	Affiliate = "Kobo"
 	ApplicationVersion = "8.11.24971"
@@ -51,7 +57,7 @@ class Kobo:
 
 	def __init__( self ):
 		self.InitializationSettings = {}
-		self.Session = requests.session()
+		self.Session = SessionWithTimeOut()
 
 	# This could be added to the session but then we would need to add { "Authorization": None } headers to all other
 	# functions that doesn't need authorization.
