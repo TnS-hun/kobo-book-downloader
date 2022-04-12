@@ -25,10 +25,10 @@ loads (do not login!) then open the developer tools (use F12 in Firefox/Chrome),
 and paste the following code there and then press Enter there in the browser.
 
 var newCaptchaDiv = document.createElement( "div" );
-newCaptchaDiv.id = "new-grecaptcha-container";
-document.getElementById( "grecaptcha-container" ).insertAdjacentElement( "afterend", newCaptchaDiv );
-grecaptcha.render( newCaptchaDiv.id, {
-	sitekey: "6LeEbUwUAAAAADJxtlhMsvgnR7SsFpMm4sirr1CJ",
+newCaptchaDiv.id = "new-hcaptcha-container";
+document.getElementById( "hcaptcha-container" ).insertAdjacentElement( "afterend", newCaptchaDiv );
+hcaptcha.render( newCaptchaDiv.id, {
+	sitekey: "51a1773a-a9ae-4992-a768-e3b8d87355e8",
 	callback: function( response ) { console.log( "Captcha response:" ); console.log( response ); }
 } );
 
