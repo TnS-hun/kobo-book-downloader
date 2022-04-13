@@ -20,7 +20,7 @@ def ReauthenticationHook( r, *args, **kwargs ):
 	if r.status_code != requests.codes.unauthorized: # 401
 		return
 
-	print( "Refreshing expired authentication token" )
+	Globals.Logger.debug( "Refreshing expired authentication token" )
 
 	# Consume content and release the original connection to allow our new request to reuse the same one.
 	r.content
@@ -81,6 +81,8 @@ class Kobo:
 	# The initial device authentication request for a non-logged in user doesn't require a user key, and the returned
 	# user key can't be used for anything.
 	def AuthenticateDevice( self, userKey: str = "" ) -> None:
+		Globals.Logger.debug( "Kobo.AuthenticateDevice" )
+
 		if len( Globals.Settings.DeviceId ) == 0:
 			Globals.Settings.DeviceId = str( uuid.uuid4() )
 			Globals.Settings.AccessToken = ""
@@ -115,6 +117,8 @@ class Kobo:
 		Globals.Settings.Save()
 
 	def RefreshAuthentication( self ) -> None:
+		Globals.Logger.debug( "Kobo.RefreshAuthentication" )
+
 		headers = Kobo.GetHeaderWithAccessToken()
 
 		postData = {
@@ -140,6 +144,8 @@ class Kobo:
 		Globals.Settings.Save()
 
 	def LoadInitializationSettings( self ) -> None:
+		Globals.Logger.debug( "Kobo.LoadInitializationSettings" )
+
 		headers = Kobo.GetHeaderWithAccessToken()
 		hooks = Kobo.__GetReauthenticationHook()
 		response = self.Session.get( "https://storeapi.kobo.com/v1/initialization", headers = headers, hooks = hooks )
@@ -148,6 +154,8 @@ class Kobo:
 		self.InitializationSettings = jsonResponse[ "Resources" ]
 
 	def __GetExtraLoginParameters( self ) -> Tuple[ str, str, str ]:
+		Globals.Logger.debug( "Kobo.__GetExtraLoginParameters" )
+
 		signInUrl = self.InitializationSettings[ "sign_in_page" ]
 
 		params = {
@@ -178,6 +186,8 @@ class Kobo:
 		return koboSignInUrl, workflowId, requestVerificationToken
 
 	def Login( self, email: str, password: str, captcha: str ) -> None:
+		Globals.Logger.debug( "Kobo.Login" )
+
 		signInUrl, workflowId, requestVerificationToken = self.__GetExtraLoginParameters()
 
 		postData = {
@@ -208,6 +218,8 @@ class Kobo:
 		self.AuthenticateDevice( userKey )
 
 	def GetBookInfo( self, productId: str ) -> dict:
+		Globals.Logger.debug( "Kobo.GetBookInfo" )
+
 		url = self.InitializationSettings[ "book" ].replace( "{ProductId}", productId )
 		headers = Kobo.GetHeaderWithAccessToken()
 		hooks = Kobo.__GetReauthenticationHook()
@@ -218,6 +230,8 @@ class Kobo:
 		return jsonResponse
 
 	def __GetMyBookListPage( self, syncToken: str ) -> Tuple[ list, str ]:
+		Globals.Logger.debug( "Kobo.__GetMyBookListPage" )
+
 		url = self.InitializationSettings[ "library_sync" ]
 		headers = Kobo.GetHeaderWithAccessToken()
 		hooks = Kobo.__GetReauthenticationHook()
@@ -252,6 +266,8 @@ class Kobo:
 		return fullBookList
 
 	def GetMyWishList( self ) -> list:
+		Globals.Logger.debug( "Kobo.GetMyWishList" )
+
 		items = []
 		currentPageIndex = 0
 
@@ -278,6 +294,8 @@ class Kobo:
 		return items
 
 	def __GetContentAccessBook( self, productId: str, displayProfile: str ) -> dict:
+		Globals.Logger.debug( "Kobo.__GetContentAccessBook" )
+
 		url = self.InitializationSettings[ "content_access_book" ].replace( "{ProductId}", productId )
 		params = { "DisplayProfile": displayProfile }
 		headers = Kobo.GetHeaderWithAccessToken()
@@ -322,6 +340,8 @@ class Kobo:
 		raise KoboException( message )
 
 	def __DownloadToFile( self, url, outputPath: str ) -> None:
+		Globals.Logger.debug( "Kobo.__DownloadToFile" )
+
 		response = self.Session.get( url, stream = True )
 		response.raise_for_status()
 		with open( outputPath, "wb" ) as f:
@@ -331,6 +351,8 @@ class Kobo:
 	# Downloading archived books is not possible, the "content_access_book" API endpoint returns with empty ContentKeys
 	# and ContentUrls for them.
 	def Download( self, productId: str, displayProfile: str, outputPath: str ) -> None:
+		Globals.Logger.debug( "Kobo.Download" )
+
 		jsonResponse = self.__GetContentAccessBook( productId, displayProfile )
 		contentKeys = Kobo.__GetContentKeys( jsonResponse )
 		downloadUrl, hasDrm = Kobo.__GetDownloadInfo( productId, jsonResponse )

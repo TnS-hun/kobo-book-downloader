@@ -1,11 +1,21 @@
 from Commands import Commands
 from Globals import Globals
 from Kobo import Kobo, KoboException
+from LogFormatter import LogFormatter
 from Settings import Settings
 
+import colorama
+import requests
+
 import argparse
+import logging
 
 def InitializeGlobals() -> None:
+	streamHandler = logging.StreamHandler()
+	streamHandler.setFormatter( LogFormatter() )
+	Globals.Logger = logging.getLogger()
+	Globals.Logger.addHandler( streamHandler )
+
 	Globals.Kobo = Kobo()
 	Globals.Settings = Settings()
 
@@ -44,8 +54,12 @@ and paste it here.
 		Globals.Kobo.Login( email, password, captcha )
 
 def Main() -> None:
+	InitializeGlobals()
+	colorama.init()
+
 	argumentParser = argparse.ArgumentParser( add_help = False )
 	argumentParser.add_argument( "--help", "-h", default = False, action = "store_true" )
+	argumentParser.add_argument( "--verbose", default = False, action = "store_true", dest = "VerboseLogging" )
 	subparsers = argumentParser.add_subparsers( dest = "Command", title = "commands", metavar = "command" )
 	getParser = subparsers.add_parser( "get", help = "Download book" )
 	getParser.add_argument( "OutputPath", metavar = "output-path", help = "If the output path is a directory then the file will be named automatically." )
@@ -60,30 +74,29 @@ def Main() -> None:
 	wishListParser = subparsers.add_parser( "wishlist", help = "List your wish listed books" )
 	arguments = argumentParser.parse_args()
 
+	if arguments.VerboseLogging:
+		Globals.Logger.setLevel( logging.DEBUG )
+
 	if arguments.Command is None:
 		Commands.ShowUsage()
-		return
-
-	InitializeGlobals()
-
-	if arguments.Command == "info":
+	elif arguments.Command == "info":
 		Commands.Info()
-		return
+	else:
+		InitializeKoboApi()
 
-	InitializeKoboApi()
-
-	if arguments.Command == "get":
-		Commands.GetBookOrBooks( arguments.RevisionId, arguments.OutputPath, arguments.all )
-	elif arguments.Command == "list":
-		Commands.ListBooks( arguments.all )
-	elif arguments.Command == "pick":
-		Commands.PickBooks( arguments.OutputPath, arguments.all )
-	elif arguments.Command == "wishlist":
-		Commands.ListWishListedBooks()
-
+		if arguments.Command == "get":
+			Commands.GetBookOrBooks( arguments.RevisionId, arguments.OutputPath, arguments.all )
+		elif arguments.Command == "list":
+			Commands.ListBooks( arguments.all )
+		elif arguments.Command == "pick":
+			Commands.PickBooks( arguments.OutputPath, arguments.all )
+		elif arguments.Command == "wishlist":
+			Commands.ListWishListedBooks()
 
 if __name__ == '__main__':
 	try:
 		Main()
 	except KoboException as e:
-		print( "ERROR: %s" % e )
+		Globals.Logger.error( e )
+	except requests.exceptions.Timeout as e:
+		Globals.Logger.error( "The request has timed out." )

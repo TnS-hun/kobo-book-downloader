@@ -208,8 +208,6 @@ Examples:
 
 	@staticmethod
 	def ListBooks( listAll: bool ) -> None:
-		colorama.init()
-
 		rows = Commands.__GetBookList( listAll )
 		for columns in rows:
 			revisionId = colorama.Style.DIM + columns[ 0 ] + colorama.Style.RESET_ALL
@@ -283,8 +281,6 @@ Examples:
 
 	@staticmethod
 	def PickBooks( outputPath: str, listAll: bool ) -> None:
-		colorama.init()
-
 		rows = Commands.__GetBookList( listAll )
 		Commands.__ListBooksToPickFrom( rows )
 		rowsToDownload = Commands.__GetPickedBookRows( rows )
@@ -292,8 +288,6 @@ Examples:
 
 	@staticmethod
 	def ListWishListedBooks() -> None:
-		colorama.init()
-
 		rows = []
 
 		wishList = Globals.Kobo.GetMyWishList()
