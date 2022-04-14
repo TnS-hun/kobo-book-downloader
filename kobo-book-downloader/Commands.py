@@ -32,6 +32,7 @@ Commands:
 
 Optional arguments:
   -h, --help    Show this help message and exit
+  --verbose     Print debugging information
 
 Examples:
   kobo-book-downloader get /dir/book.epub 01234567-89ab-cdef-0123-456789abcdef   Download book
