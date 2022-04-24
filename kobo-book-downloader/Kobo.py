@@ -169,9 +169,10 @@ class Kobo:
 		response.raise_for_status()
 		htmlResponse = response.text
 
-		# The link can be found in the response ('<a class="kobo-link partner-option kobo"') but this will do for now.
+		# The link can be found in the response ('<a class="kobo-link partner-option kobo"') but the Android app does not use the entire path.
+		# (The entire path looks like this: "/ww/en/signin/signin/kobo?workflowId=01234567-0123-0123-0123-0123456789ab".)
 		parsed = urllib.parse.urlparse( signInUrl )
-		koboSignInUrl = parsed._replace( query = None, path = "/ww/en/signin/signin/kobo" ).geturl()
+		koboSignInUrl = parsed._replace( query = None, path = "/ww/en/signin/signin" ).geturl()
 
 		match = re.search( r""" name="LogInModel.WorkflowId" type="hidden" value="([^"]+)" />""", htmlResponse )
 		if match is None:
