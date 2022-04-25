@@ -55,9 +55,7 @@ class Kobo:
     def __init__(self, user: User):
         self.InitializationSettings = {}
         self.Session = requests.session()
-        self.Session.headers.update({
-            "User-Agent": Kobo.UserAgent
-        })
+        self.Session.headers.update({"User-Agent": Kobo.UserAgent})
         self.user = user
 
     # PRIVATE METHODS
