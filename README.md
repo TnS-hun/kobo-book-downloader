@@ -76,15 +76,15 @@ No python installation necessary.  Simply download the appropriate executable fr
 ``` bash
 # Linux
 wget https://github.com/subdavis/kobo-book-downloader/releases/latest/download/kobodl-ubuntu
-chmod +x kobodl-ubuntu-latest
-./kobodl-ubuntu-latest
+chmod +x kobodl-ubuntu
+./kobodl-ubuntu
 ```
 
 ``` bash
 # MacOS (Catalina 10.15 or newer required.  For older versions, use the pip or docker install option)
 wget https://github.com/subdavis/kobo-book-downloader/releases/latest/download/kobodl-macos
-chmod +x kobodl-macos-latest
-./kobodl-macos-latest
+chmod +x kobodl-macos
+./kobodl-macos
 ```
 
 ``` powershell
