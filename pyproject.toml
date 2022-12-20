@@ -12,7 +12,7 @@ multi_line_output = 3
 
 [tool.poetry]
 name = "kobodl"
-version = "0.9.2"
+version = "0.9.3"
 description = "Kobo Book Downloader"
 authors = ["Brandon Davis <kobodl@subdavis.com>"]
 license = "Unlicense"
@@ -28,7 +28,7 @@ keywords = ["Kobo", "eBook", "Audiobook", "Downloader", "DRM"]
 kobodl = "kobodl:cli"
 
 [tool.poetry.dependencies]
-python = ">=3.6,<3.10"
+python = ">=3.6,<3.11"
 beautifulsoup4 = "<5.0.0"
 click = "<8"
 dataclasses = "<1.0.0"
