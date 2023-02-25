@@ -38,7 +38,6 @@ It adds several new features.
   * Use `kobodl book get`. There will not be a download button in the webpage for audiobooks because they consist of many large files.
 * **multi-user support**; fetch books for multiple accounts.
 * **web interface**; adds new browser gui (with flask)
-* **CalibreWeb Integration**; send books directly to CalibreWeb from the web interface.
 * [docker image](https://github.com/subdavis/kobodl/pkgs/container/kobodl)
 * [pypi package](https://pypi.org/project/kobodl/)
 * [pyinstaller bundles](https://github.com/subdavis/kobo-book-downloader/releases/latest)
@@ -205,26 +204,6 @@ kobodl --debug [OPTIONS] COMMAND [ARGS]...
 Adding a user requires a bit of hackery to get a reCAPTCHA code from Kobo's website. This GIF helps to explain how to do that.
 
 ![Gif explaining how to get reCAPTHCA](docs/captcha.gif)
-
-## CalibreWeb Integration: **Experimental**
-
-Kobodl's web interface can send books directly to your calibre web server.  Only supported from web client.
-
-You must add your CalibreWeb server and user details directly in kobodl.json.  Make sure to include `/upload` in the url.  If you don't have CalibreWeb authentication on, leave these fields blank (`""`).
-
-``` json
-{
-    "users": [ /* ... */ ],
-    "calibre_web": {
-        "enabled": true,
-        "url": "https://calibre.domain.com/upload",
-        "username": "CHANGEME",
-        "password": "CHANGEME"
-    }
-}
-```
-
-> **NOTE**: you may need to add escape characters if your password contains a `\`, `"`, or others that require JSON escaping.
 
 ## Troubleshooting
 

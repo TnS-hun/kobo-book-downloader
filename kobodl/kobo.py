@@ -336,7 +336,6 @@ class Kobo:
     # Downloading archived books is not possible, the "content_access_book" API endpoint returns with empty ContentKeys
     # and ContentUrls for them.
     def Download(self, bookMetadata: dict, isAudiobook: bool, outputPath: str) -> None:
-
         downloadUrl, hasDrm = self.__GetDownloadInfo(bookMetadata, isAudiobook)
         revisionId = Kobo.GetProductId(bookMetadata)
         temporaryOutputPath = outputPath + ".downloading"
@@ -375,7 +374,6 @@ class Kobo:
     # "library_items" instead to get the My Books list, but "library_items" gives back less info (even with the
     # embed=ProductMetadata query parameter set).
     def GetMyBookList(self) -> list:
-
         if not self.user.AreAuthenticationSettingsSet():
             raise NotAuthenticatedException(f'User {self.user.Email} is not authenticated')
 
