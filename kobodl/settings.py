@@ -7,15 +7,6 @@ from dataclasses_json import dataclass_json
 
 @dataclass_json
 @dataclasses.dataclass
-class CalibreWeb:
-    enabled: bool = False
-    url: str = "http://localhost:8083"
-    username: str = ""
-    password: str = ""
-
-
-@dataclass_json
-@dataclasses.dataclass
 class User:
     Email: str
     DeviceId: str = ""
@@ -35,7 +26,6 @@ class User:
 @dataclasses.dataclass
 class UserList:
     users: List[User] = dataclasses.field(default_factory=list)
-    calibre_web: CalibreWeb = dataclasses.field(default_factory=CalibreWeb)
 
     def getUser(self, identifier: str) -> Union[User, None]:
         for user in self.users:
