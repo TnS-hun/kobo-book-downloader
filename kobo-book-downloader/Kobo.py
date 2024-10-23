@@ -335,8 +335,15 @@ class Kobo:
 		for jsonContentUrl in jsonContentUrls:
 			if ( jsonContentUrl[ "DRMType" ] == "KDRM" or jsonContentUrl[ "DRMType" ] == "SignedNoDrm" ) and \
 				( jsonContentUrl[ "UrlFormat" ] == "EPUB3" or jsonContentUrl[ "UrlFormat" ] == "KEPUB" ):
+				# Remove the mysterious "b" query parameter that causes forbidden downloads.
+				url = jsonContentUrl[ "DownloadUrl" ]
+				parsed = urllib.parse.urlparse( url )
+				parsedQueries = urllib.parse.parse_qs( parsed.query )
+				parsedQueries.pop( "b", None )
+				url = parsed._replace( query = urllib.parse.urlencode( parsedQueries, doseq = True ) ).geturl()
+
 				hasDrm = jsonContentUrl[ "DRMType" ] == "KDRM"
-				return jsonContentUrl[ "DownloadUrl" ], hasDrm
+				return url, hasDrm
 
 		message = "Download URL for supported formats can't be found for product '%s'.\n" % productId
 		message += "Available formats:"
