@@ -56,14 +56,19 @@ class SessionWithTimeOut( requests.Session ):
 
 class Kobo:
 	Affiliate = "Kobo"
-	ApplicationVersion = "8.11.24971"
+	ApplicationVersion = "10.1.2.39807"
 	DefaultPlatformId = "00000000-0000-0000-0000-000000004000"
 	DisplayProfile = "Android"
 
 	def __init__( self ):
-		# Use the user agent of the Kobo Android app, otherwise the login request hangs forever.
 		headers = {
-			"User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Google Nexus 7 2013 Build/MRA58K; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/74.0.3729.186 Safari/537.36 KoboApp/8.40.2.29861 KoboPlatform Id/00000000-0000-0000-0000-000000004000 KoboAffiliate/Kobo KoboBuildFlavor/global",
+			# Use the user agent of the Kobo Android app, otherwise the login request hangs forever.
+			"User-Agent": "Mozilla/5.0 (Linux; Android 13; Pixel Build/TQ2B.230505.005.A1; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/101.0.4951.61 Safari/537.36 KoboApp/10.1.2.39807 KoboPlatform Id/00000000-0000-0000-0000-000000004000 KoboAffiliate/Kobo KoboBuildFlavor/global",
+
+			# At least one x-kobo-... header must present. Seemingly it does not matter which one, so we add these.
+			"x-kobo-affiliatename": Kobo.Affiliate,
+			"x-kobo-appversion": Kobo.ApplicationVersion,
+			"x-kobo-platformid": Kobo.DefaultPlatformId,
 		}
 
 		self.InitializationSettings = {}
