@@ -59,16 +59,23 @@ class Kobo:
 	ApplicationVersion = "10.1.2.39807"
 	DefaultPlatformId = "00000000-0000-0000-0000-000000004000"
 	DisplayProfile = "Android"
+	CarrierName = "310270"
+	DeviceModel = "Pixel"
+	DeviceOsVersion = "33"
 
 	def __init__( self ):
 		headers = {
 			# Use the user agent of the Kobo Android app, otherwise the login request hangs forever.
 			"User-Agent": "Mozilla/5.0 (Linux; Android 13; Pixel Build/TQ2B.230505.005.A1; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/101.0.4951.61 Safari/537.36 KoboApp/10.1.2.39807 KoboPlatform Id/00000000-0000-0000-0000-000000004000 KoboAffiliate/Kobo KoboBuildFlavor/global",
 
-			# At least one x-kobo-... header must present. Seemingly it does not matter which one, so we add these.
 			"x-kobo-affiliatename": Kobo.Affiliate,
 			"x-kobo-appversion": Kobo.ApplicationVersion,
 			"x-kobo-platformid": Kobo.DefaultPlatformId,
+			"x-kobo-carriername": Kobo.CarrierName,
+			"x-kobo-devicemodel": Kobo.DeviceModel,
+			"x-kobo-deviceos": "Android",
+			"x-kobo-deviceosversion": Kobo.DeviceOsVersion,
+			"X-Requested-With": "com.kobobooks.android",
 		}
 
 		self.InitializationSettings = {}
@@ -172,7 +179,13 @@ class Kobo:
 			"wsa": Kobo.Affiliate,
 			"pwsav": Kobo.ApplicationVersion,
 			"pwspid": Kobo.DefaultPlatformId,
-			"pwsdid": Globals.Settings.DeviceId
+			"pwsdid": Globals.Settings.DeviceId,
+			"wscfv": "1.5",
+			"wscf": "kepub",
+			"wsmc": Kobo.CarrierName,
+			"pwspov": Kobo.DeviceOsVersion,
+			"pwspt": "Mobile",
+			"pwsdm": Kobo.DeviceModel,
 		}
 
 		response = self.Session.get( signInUrl, params = params )
