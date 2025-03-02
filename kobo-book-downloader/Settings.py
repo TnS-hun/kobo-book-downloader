@@ -4,6 +4,7 @@ import os
 class Settings:
 	def __init__( self ):
 		self.DeviceId = ""
+		self.SerialNumber = ""
 		self.AccessToken = ""
 		self.RefreshToken = ""
 		self.UserId = ""
@@ -37,6 +38,7 @@ class Settings:
 			"AccessToken": self.AccessToken,
 			"DeviceId": self.DeviceId,
 			"RefreshToken": self.RefreshToken,
+			"SerialNumber": self.SerialNumber,
 			"UserId": self.UserId,
 			"UserKey": self.UserKey
 		}
@@ -45,6 +47,7 @@ class Settings:
 		self.AccessToken = jsonMap.get( "AccessToken", self.AccessToken )
 		self.DeviceId = jsonMap.get( "DeviceId", self.DeviceId )
 		self.RefreshToken = jsonMap.get( "RefreshToken", self.RefreshToken )
+		self.SerialNumber = jsonMap.get( "SerialNumber", self.SerialNumber )
 		self.UserId = jsonMap.get( "UserId", self.UserId )
 		self.UserKey = jsonMap.get( "UserKey", self.UserKey )
 

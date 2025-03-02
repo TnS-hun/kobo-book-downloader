@@ -67,7 +67,7 @@ python kobo-book-downloader list --help
 
 ## Notes
 
-kobo-book-downloader will prompt for your [Kobo](https://www.kobo.com/) e-mail address and password. Once it has successfully logged in, it won't ask for them again, it doesn't store them either, from then on it works with access tokens.
+kobo-book-downloader uses the same web-based activation method to login as the Kobo e-readers. You will have to open an activation link -- that uses the official [Kobo](https://www.kobo.com/) site -- in your browser and enter the code, then you might need to login too if kobo.com asks you to. Once kobo-book-downloader has successfully logged in, it won't ask for the activation again. kobo-book-downloader doesn't store your Kobo password in any form, it works with access tokens.
 
 The program was made out of frustration with my workflow (purchase book on Kobo, turn on WiFi on the router, exit from KOReader, start Nickel from the Kobo start menu, turn on WiFi on the Kobo e-reader, wait till the downloading and other syncing finishes, turn off the WiFi on the e-reader, turn off the WiFi on the router, connect the e-reader via USB, run obok.py, copy the book to the e-reader, power off the e-reader, start KOReader, and finally start reading).
 

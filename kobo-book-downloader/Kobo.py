@@ -8,8 +8,10 @@ import base64
 import html
 import os
 import re
+import secrets
+import string
+import time
 import urllib
-import uuid
 
 # It was not possible to enter the entire captcha response on MacOS.
 # Importing readline changes the implementation of input() and solves the issue.
@@ -56,26 +58,17 @@ class SessionWithTimeOut( requests.Session ):
 
 class Kobo:
 	Affiliate = "Kobo"
-	ApplicationVersion = "10.1.2.39807"
-	DefaultPlatformId = "00000000-0000-0000-0000-000000004000"
+	ApplicationVersion = "4.38.23171"
+	DefaultPlatformId = "00000000-0000-0000-0000-000000000373"
 	DisplayProfile = "Android"
-	CarrierName = "310270"
-	DeviceModel = "Pixel"
-	DeviceOsVersion = "33"
+	DeviceModel = "Kobo Aura ONE"
+	DeviceOs = "3.0.35+"
+	DeviceOsVersion = "NA"
 
 	def __init__( self ):
 		headers = {
-			# Use the user agent of the Kobo Android app, otherwise the login request hangs forever.
-			"User-Agent": "Mozilla/5.0 (Linux; Android 13; Pixel Build/TQ2B.230505.005.A1; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/101.0.4951.61 Safari/537.36 KoboApp/10.1.2.39807 KoboPlatform Id/00000000-0000-0000-0000-000000004000 KoboAffiliate/Kobo KoboBuildFlavor/global",
-
-			"x-kobo-affiliatename": Kobo.Affiliate,
-			"x-kobo-appversion": Kobo.ApplicationVersion,
-			"x-kobo-platformid": Kobo.DefaultPlatformId,
-			"x-kobo-carriername": Kobo.CarrierName,
-			"x-kobo-devicemodel": Kobo.DeviceModel,
-			"x-kobo-deviceos": "Android",
-			"x-kobo-deviceosversion": Kobo.DeviceOsVersion,
-			"X-Requested-With": "com.kobobooks.android",
+			# Use the user agent of the Kobo e-readers.
+			"User-Agent": "Mozilla/5.0 (Linux; U; Android 2.0; en-us;) AppleWebKit/538.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/538.1 (Kobo Touch 0373/4.38.23171)",
 		}
 
 		self.InitializationSettings = {}
@@ -95,13 +88,19 @@ class Kobo:
 	def __GetReauthenticationHook() -> dict:
 		return { "response": ReauthenticationHook }
 
+	@staticmethod
+	def __GenerateRandomHexDigitString( length: int ) -> str:
+		id = "".join( secrets.choice( string.hexdigits ) for _ in range( length ) )
+		return id.lower()
+
 	# The initial device authentication request for a non-logged in user doesn't require a user key, and the returned
 	# user key can't be used for anything.
 	def AuthenticateDevice( self, userKey: str = "" ) -> None:
 		Globals.Logger.debug( "Kobo.AuthenticateDevice" )
 
 		if len( Globals.Settings.DeviceId ) == 0:
-			Globals.Settings.DeviceId = str( uuid.uuid4() )
+			Globals.Settings.DeviceId = Kobo.__GenerateRandomHexDigitString( 64 )
+			Globals.Settings.SerialNumber = Kobo.__GenerateRandomHexDigitString( 32 )
 			Globals.Settings.AccessToken = ""
 			Globals.Settings.RefreshToken = ""
 
@@ -110,7 +109,8 @@ class Kobo:
 			"AppVersion": Kobo.ApplicationVersion,
 			"ClientKey": base64.b64encode( Kobo.DefaultPlatformId.encode() ).decode(),
 			"DeviceId": Globals.Settings.DeviceId,
-			"PlatformId": Kobo.DefaultPlatformId
+			"PlatformId": Kobo.DefaultPlatformId,
+			"SerialNumber": Globals.Settings.SerialNumber,
 		}
 
 		if len( userKey ) > 0:
@@ -170,75 +170,64 @@ class Kobo:
 		jsonResponse = response.json()
 		self.InitializationSettings = jsonResponse[ "Resources" ]
 
-	def __GetExtraLoginParameters( self ) -> Tuple[ str, str, str ]:
-		Globals.Logger.debug( "Kobo.__GetExtraLoginParameters" )
+	def WaitTillActivation( self, activationCheckUrl ) -> Tuple[ str, str ]:
+		while True:
+			print( "Waiting for you to finish the activation..." )
+			time.sleep( 5 )
 
-		signInUrl = self.InitializationSettings[ "sign_in_page" ]
+			response = self.Session.get( activationCheckUrl )
+			response.raise_for_status()
+			jsonResponse = response.json()
+			if jsonResponse[ "Status" ] == "Complete":
+				return jsonResponse[ "UserId" ], jsonResponse[ "UserKey" ]
+
+	def ActivateOnWeb( self ) -> Tuple[ str, str ]:
+		print( "Initiating web-based activation" )
 
 		params = {
-			"wsa": Kobo.Affiliate,
-			"pwsav": Kobo.ApplicationVersion,
 			"pwspid": Kobo.DefaultPlatformId,
+			"wsa": Kobo.Affiliate,
 			"pwsdid": Globals.Settings.DeviceId,
-			"wscfv": "1.5",
-			"wscf": "kepub",
-			"wsmc": Kobo.CarrierName,
+			"pwsav": Kobo.ApplicationVersion,
+			"pwsdm": Kobo.DefaultPlatformId, # In the Android app this is the device model but Nickel sends the platform ID...
+			"pwspos": Kobo.DeviceOs,
 			"pwspov": Kobo.DeviceOsVersion,
-			"pwspt": "Mobile",
-			"pwsdm": Kobo.DeviceModel,
 		}
 
-		response = self.Session.get( signInUrl, params = params )
+		response = self.Session.get( "https://auth.kobobooks.com/ActivateOnWeb", params = params )
 		response.raise_for_status()
 		htmlResponse = response.text
 
-		# The link can be found in the response ('<a class="kobo-link partner-option kobo"') but the Android app does not use the entire path.
-		# (The entire path looks like this: "/ww/en/signin/signin/kobo?workflowId=01234567-0123-0123-0123-0123456789ab".)
-		parsed = urllib.parse.urlparse( signInUrl )
-		koboSignInUrl = parsed._replace( query = None, path = "/ww/en/signin/signin" ).geturl()
-
-		match = re.search( r"""/signin/kobo\?workflowId=([0-9a-f\-]+)""", htmlResponse )
+		match = re.search( 'data-poll-endpoint="([^"]+)"', htmlResponse )
 		if match is None:
-			raise KoboException( "Can't find the workflow ID. The page format might have changed." )
-		workflowId = html.unescape( match.group( 1 ) )
+			raise KoboException( "Can't find the activation poll endpoint in the response. The page format might have changed." )
+		activationCheckUrl = "https://auth.kobobooks.com" + html.unescape( match.group( 1 ) )
 
-		match = re.search( r"""<input name="__RequestVerificationToken" type="hidden" value="([^"]+)" />""", htmlResponse )
+		match = re.search( r"""qrcodegenerator/generate.+?%26code%3D(\d+)'""", htmlResponse )
 		if match is None:
-			raise KoboException( "Can't find the request verification token in the login form. The page format might have changed." )
-		requestVerificationToken = html.unescape( match.group( 1 ) )
+			raise KoboException( "Can't find the activation code in the response. The page format might have changed." )
+		activationCode = match.group( 1 )
 
-		return koboSignInUrl, workflowId, requestVerificationToken
+		return activationCheckUrl, activationCode
 
-	def Login( self, email: str, password: str, captcha: str ) -> None:
+	def Login( self ) -> None:
 		Globals.Logger.debug( "Kobo.Login" )
 
-		signInUrl, workflowId, requestVerificationToken = self.__GetExtraLoginParameters()
+		activationCheckUrl, activationCode = self.ActivateOnWeb()
 
-		postData = {
-			"LogInModel.WorkflowId": workflowId,
-			"LogInModel.Provider": Kobo.Affiliate,
-			"ReturnUrl": "",
-			"__RequestVerificationToken": requestVerificationToken,
-			"LogInModel.UserName": email,
-			"LogInModel.Password": password,
-			"g-recaptcha-response": captcha,
-			"h-captcha-response": captcha
-		}
+		print( "" )
+		print( "kobo-book-downloader uses the same web-based activation method to log in as the Kobo e-readers." )
+		print( "You will have to open the link below in your browser and enter the code, then you might need to login too if kobo.com asks you to." )
+		print( "kobo-book-downloader will wait now and periodically check for the activation to complete." )
+		print( "" )
+		print( f"Open https://www.kobo.com/activate and enter {activationCode}." )
+		print( "" )
 
-		response = self.Session.post( signInUrl, data = postData )
-		response.raise_for_status()
-		htmlResponse = response.text
+		userId, userKey = self.WaitTillActivation( activationCheckUrl )
+		print( "" )
 
-		match = re.search( r"'(kobo://UserAuthenticated\?[^']+)';", htmlResponse )
-		if match is None:
-			raise KoboException( "Authenticated user URL can't be found. The page format might have changed." )
-
-		url = match.group( 1 )
-		parsed = urllib.parse.urlparse( url )
-		parsedQueries = urllib.parse.parse_qs( parsed.query )
-		Globals.Settings.UserId = parsedQueries[ "userId" ][ 0 ] # We don't call Settings.Save here, AuthenticateDevice will do that if it succeeds.
-		userKey = parsedQueries[ "userKey" ][ 0 ]
-
+		# We don't call Settings.Save here, AuthenticateDevice will do that if it succeeds.
+		Globals.Settings.UserId = userId
 		self.AuthenticateDevice( userKey )
 
 	def GetBookInfo( self, productId: str ) -> dict:
