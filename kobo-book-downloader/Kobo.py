@@ -203,7 +203,7 @@ class Kobo:
 			raise KoboException( "Can't find the activation poll endpoint in the response. The page format might have changed." )
 		activationCheckUrl = "https://auth.kobobooks.com" + html.unescape( match.group( 1 ) )
 
-		match = re.search( r"""qrcodegenerator/generate.+?%26code%3D(\d+)'""", htmlResponse )
+		match = re.search( r"""qrcodegenerator/generate.+?%26code%3D(\d+)""", htmlResponse )
 		if match is None:
 			raise KoboException( "Can't find the activation code in the response. The page format might have changed." )
 		activationCode = match.group( 1 )
