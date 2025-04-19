@@ -170,16 +170,30 @@ class Kobo:
 		jsonResponse = response.json()
 		self.InitializationSettings = jsonResponse[ "Resources" ]
 
-	def WaitTillActivation( self, activationCheckUrl ) -> Tuple[ str, str ]:
+	def WaitTillActivation( self, activationCheckUrl: str ) -> Tuple[ str, str ]:
 		while True:
 			print( "Waiting for you to finish the activation..." )
 			time.sleep( 5 )
 
-			response = self.Session.get( activationCheckUrl )
+			response = self.Session.post( activationCheckUrl )
 			response.raise_for_status()
-			jsonResponse = response.json()
+
+			jsonResponse = None
+			try:
+				jsonResponse = response.json()
+			except Exception:
+				Globals.Logger.debug( f"Activation check's response:\n{response.text}" )
+				raise KoboException( "Error checking the activation's status. The response is not JSON." )
+
 			if jsonResponse[ "Status" ] == "Complete":
-				return jsonResponse[ "UserId" ], jsonResponse[ "UserKey" ]
+				# RedirectUrl looks like this:
+				# kobo://UserAuthenticated?returnUrl=https%3A%2F%2Fwww.kobo.com%2Fww%2Fen%2F&userKey=...&userId=...&email=...
+				redirectUrl = jsonResponse[ "RedirectUrl" ]
+				parsed = urllib.parse.urlparse( redirectUrl )
+				parsedQueries = urllib.parse.parse_qs( parsed.query )
+				userId = parsedQueries[ "userId" ][ 0 ]
+				userKey = parsedQueries[ "userKey" ][ 0 ]
+				return userId, userKey
 
 	def ActivateOnWeb( self ) -> Tuple[ str, str ]:
 		print( "Initiating web-based activation" )
