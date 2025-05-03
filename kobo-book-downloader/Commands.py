@@ -185,14 +185,16 @@ Examples:
 				continue
 
 			bookEntitlement = newEntitlement.get( "BookEntitlement" )
-			if bookEntitlement is not None:
-				# Skip saved previews.
-				if bookEntitlement.get( "Accessibility" ) == "Preview":
-					continue
+			if bookEntitlement is None:
+				continue
 
-				# Skip refunded books.
-				if bookEntitlement.get( "IsLocked" ):
-					continue
+			# Skip saved previews.
+			if bookEntitlement.get( "Accessibility" ) == "Preview":
+				continue
+
+			# Skip refunded books.
+			if bookEntitlement.get( "IsLocked" ):
+				continue
 
 			if ( not listAll ) and Commands.__IsBookRead( newEntitlement ):
 				continue
