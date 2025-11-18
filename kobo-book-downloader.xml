@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>kobo-book-downloader</Name>
+  <Repository>kobo-book-downloader:latest</Repository>
+  <Registry>https://github.com/chemicalsno/kobo-book-downloader</Registry>
+  <Network>bridge</Network>
+  <Shell>sh</Shell>
+  <Project>https://github.com/chemicalsno/kobo-book-downloader</Project>
+  <Overview>A tool to download your purchased Kobo books and remove DRM. This container exposes the kobo-book-downloader CLI via Unraid template variables and provides a small Flask web UI for activation and library downloads.</Overview>
+  <Category>MediaApp:Books</Category>
+  <TemplateURL>https://raw.githubusercontent.com/chemicalsno/kobo-book-downloader/main/kobo-book-downloader.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/chemicalsno/kobo-book-downloader/main/kobo-icon.svg</Icon>
+  <ExtraParams>--user 99:100</ExtraParams>
+  <PostArgs/>
+  <CPUShares>1024</CPUShares>
+  <Description>
+A tool to download your purchased Kobo books and remove the Digital Rights Management (DRM) protection from them. The resulting EPUB files can be read with various e-readers.
+
+Unlike obok.py, kobo-book-downloader doesn't require any pre-downloading through a Kobo e-reader or application.
+
+This container provides:
+- Command line interface exposed via Unraid variables
+- Automatic DRM removal
+- Small Flask web UI (Authentication & Library tabs)
+  </Description>
+  <Labels/>
+  <Config Name="Web UI Port" Target="5000" Default="5000" Mode="tcp" Description="Port for the optional web UI" Type="Port" Display="always" Required="false" Mask="false">5000</Config>
+  <Config Name="Config Path" Target="/config" Default="/mnt/user/appdata/kobo-book-downloader/config" Mode="rw" Description="Container Path: /config" Type="Path" Display="advanced" Required="true" Mask="false">/mnt/user/appdata/kobo-book-downloader/config</Config>
+  <Config Name="Downloads Path" Target="/downloads" Default="/mnt/user/appdata/kobo-book-downloader/downloads" Mode="rw" Description="Container Path: /downloads" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/kobo-book-downloader/downloads</Config>
+  <Config Name="PUID" Target="PUID" Default="99" Mode="" Description="Container Variable: PUID" Type="Variable" Display="advanced" Required="false" Mask="false">99</Config>
+  <Config Name="PGID" Target="PGID" Default="100" Mode="" Description="Container Variable: PGID" Type="Variable" Display="advanced" Required="false" Mask="false">100</Config>
+  <Config Name="Time Zone" Target="TZ" Default="America/New_York" Mode="" Description="Container Variable: TZ" Type="Variable" Display="advanced" Required="false" Mask="false">America/New_York</Config>
+  <Config Name="UI_ENABLED" Target="UI_ENABLED" Default="true" Mode="" Description="Enable the web UI (true/false). When false, the container runs a single CLI command and exits." Type="Variable" Display="always" Required="false" Mask="false">true</Config>
+  <Config Name="UI_PORT" Target="UI_PORT" Default="5000" Mode="" Description="Port used by the web UI inside the container" Type="Variable" Display="advanced" Required="false" Mask="false">5000</Config>
+  <Config Name="KBD_COMMAND" Target="KBD_COMMAND" Default="list --all" Mode="" Description="Command arguments passed to kobo-book-downloader when running in CLI mode (e.g. 'list --all', 'pick /downloads', 'get /downloads --all')" Type="Variable" Display="always" Required="false" Mask="false">list --all</Config>
+</Container>

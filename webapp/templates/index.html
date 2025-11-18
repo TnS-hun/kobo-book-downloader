@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kobo Book Downloader</title>
+
+    <!-- Pico.css -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css"
+    />
+
+    <style>
+      :root {
+        color-scheme: dark;
+
+        --kbd-accent: #2563eb;
+        --kbd-accent-soft: #1d4ed8;
+        --kbd-danger-bg: #7f1d1d;
+        --kbd-danger-fg: #fee2e2;
+      }
+
+      :root[data-theme="light"] {
+        color-scheme: light;
+
+        --kbd-accent: #2563eb;
+        --kbd-accent-soft: #3b82f6;
+        --kbd-danger-bg: #fee2e2;
+        --kbd-danger-fg: #b91c1c;
+      }
+
+      body {
+        min-height: 100vh;
+      }
+
+      main.container {
+        padding-block: 2rem;
+      }
+
+      .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .page-header-main {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.4rem;
+      }
+
+      .page-header h1 {
+        margin-bottom: 0;
+      }
+
+      .tabs {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.18rem 0.3rem;
+        border-radius: 9999px;
+        background: rgba(148, 163, 184, 0.16);
+      }
+
+      .tabs a {
+        padding: 0.2rem 0.9rem;
+        border-radius: 999px;
+        text-decoration: none;
+        font-size: 1rem;
+        font-weight: 500;
+        border: 1px solid transparent;
+        color: inherit;
+      }
+
+      .tabs a.active {
+        background: var(--kbd-accent);
+        border-color: var(--kbd-accent);
+        color: #ffffff;
+        box-shadow: 0 4px 10px rgba(15, 23, 42, 0.45);
+      }
+
+      .tabs a:not(.active) {
+        border-color: var(--kbd-accent-soft);
+        background: transparent;
+        opacity: 0.85;
+      }
+
+      .theme-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.25rem;
+        height: 2.25rem;
+        border-radius: 9999px;
+        border: 1px solid var(--kbd-accent-soft);
+        background-color: transparent;
+        color: var(--kbd-accent-soft);
+        padding: 0;
+        cursor: pointer;
+      }
+
+      .theme-toggle svg {
+        display: none;
+      }
+
+      .theme-toggle svg.active {
+        display: inline-block;
+      }
+
+      .icon-theme-toggle {
+        width: 1.25rem;
+        height: 1.25rem;
+      }
+
+      .top-nav {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 0.75rem;
+        align-items: center;
+        margin-bottom: 1.5rem;
+      }
+
+      .top-nav form {
+        margin: 0;
+        flex: 1 1 0;
+      }
+
+      .top-nav button {
+        width: 100%;
+        background: var(--kbd-accent);
+        border-color: var(--kbd-accent);
+        color: #ffffff;
+      }
+
+      .top-nav button[disabled] {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      section + section {
+        margin-top: 2rem;
+      }
+
+      .messages {
+        margin-bottom: 1.5rem;
+      }
+
+      .message {
+        padding: 0.6rem 0.9rem;
+        border-radius: 0.5rem;
+        margin-bottom: 0.4rem;
+        font-size: 0.95rem;
+      }
+
+      .message.info {
+        background: rgba(37, 99, 235, 0.12);
+        border-left: 2px solid var(--kbd-accent);
+      }
+
+      .message.error {
+        background: var(--kbd-danger-bg);
+        color: var(--kbd-danger-fg);
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.1rem 0.55rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        border: 1px solid transparent;
+      }
+
+      .badge.ok {
+        background: rgba(22, 163, 74, 0.12);
+        border-color: rgba(22, 163, 74, 0.7);
+      }
+
+      .badge.warn {
+        background: rgba(185, 28, 28, 0.08);
+        border-color: rgba(185, 28, 28, 0.6);
+      }
+
+      table {
+        width: 100%;
+      }
+
+      .table-empty-note {
+        opacity: 0.7;
+        font-style: italic;
+      }
+
+      @media (max-width: 640px) {
+        .page-header {
+          align-items: center;
+        }
+
+        .top-nav {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .top-nav button {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="container">
+      <header class="page-header">
+        <div class="page-header-main">
+          <h1>Kobo Book Downloader</h1>
+          <nav class="tabs" aria-label="Main sections">
+            <a
+              href="{{ url_for('index', tab='auth') }}"
+              class="{% if active_tab != 'library' %}active{% endif %}"
+              >Authentication</a
+            >
+            <a
+              href="{{ url_for('index', tab='library') }}"
+              class="{% if active_tab == 'library' %}active{% endif %}"
+              >Library</a
+            >
+          </nav>
+        </div>
+        <button
+          id="theme-toggle"
+          class="theme-toggle"
+          type="button"
+          aria-label="Toggle theme"
+        >
+          <svg
+            id="icon-sun"
+            class="icon-theme-toggle"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="4"></circle>
+            <line x1="12" y1="2" x2="12" y2="4"></line>
+            <line x1="12" y1="20" x2="12" y2="22"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="2" y1="12" x2="4" y2="12"></line>
+            <line x1="20" y1="12" x2="22" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg
+            id="icon-moon"
+            class="icon-theme-toggle active"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M21 12.79A9 9 0 0111.21 3 7 7 0 0012 21a9 9 0 009-8.21z"></path>
+          </svg>
+        </button>
+      </header>
+
+      <section class="messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="message {{ category }}" role="alert">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+      </section>
+
+      <section aria-labelledby="status-heading">
+        <h2 id="status-heading">Status</h2>
+        <p>
+          Auth settings:
+          {% if auth_settings_set %}
+          <span class="badge ok">Device authenticated</span>
+          {% else %}
+          <span class="badge warn">Not authenticated</span>
+          {% endif %}
+          &nbsp; Login:
+          {% if logged_in %}
+          <span class="badge ok">Logged in</span>
+          {% else %}
+          <span class="badge warn">Not logged in</span>
+          {% endif %}
+        </p>
+        {% if active_tab != 'library' %}
+        <article aria-labelledby="activation-heading">
+          <header>
+            <h3 id="activation-heading">Activation</h3>
+          </header>
+
+          {% if logged_in %}
+          <p>You are logged in. No activation is currently required.</p>
+          {% else %}
+          {% if activation_state.has_activation %}
+          <p>
+            Activation in progress. Go to
+            <a
+              href="https://www.kobo.com/activate"
+              target="_blank"
+              rel="noopener noreferrer"
+              >https://www.kobo.com/activate</a
+            >
+            and enter this code:
+            <strong>{{ activation_state.activation_code }}</strong>
+          </p>
+          {% else %}
+          <p>No activation in progress.</p>
+          {% endif %}
+
+          <form method="post" action="{{ url_for('activation_start') }}">
+            <button type="submit">Start activation</button>
+          </form>
+          <form method="post" action="{{ url_for('activation_check') }}">
+            <button type="submit">Check activation status</button>
+          </form>
+          {% endif %}
+        </article>
+        {% endif %}
+      </section>
+
+      {% if active_tab == 'library' %}
+      <nav class="top-nav" aria-label="Library actions">
+        <form method="get" action="{{ url_for('index') }}">
+          <input type="hidden" name="books" value="unread" />
+          <button type="submit" {% if not logged_in %}disabled{% endif %}>
+            List unread books
+          </button>
+        </form>
+        <form method="get" action="{{ url_for('index') }}">
+          <input type="hidden" name="books" value="all" />
+          <button type="submit" {% if not logged_in %}disabled{% endif %}>
+            List all books
+          </button>
+        </form>
+        <form method="post" action="{{ url_for('download_unread') }}">
+          <button type="submit" {% if not logged_in %}disabled{% endif %}>
+            Download unread
+          </button>
+        </form>
+        <form method="post" action="{{ url_for('download_all') }}">
+          <button type="submit" {% if not logged_in %}disabled{% endif %}>
+            Download all
+          </button>
+        </form>
+      </nav>
+      {% endif %}
+
+      {% if active_tab == 'library' %}
+      <section aria-labelledby="library-heading">
+        <h2 id="library-heading">Library</h2>
+
+        <article>
+          <header>
+            <strong>Books ({{ books_mode or 'unread' }}):</strong>
+          </header>
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Revision ID</th>
+                <th scope="col">Title</th>
+                <th scope="col">Author</th>
+                <th scope="col">Archived</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if books %}
+              {% for book in books %}
+              <tr>
+                <td><code>{{ book.revision_id }}</code></td>
+                <td>{{ book.title }}</td>
+                <td>{{ book.author }}</td>
+                <td>{% if book.archived %}Yes{% endif %}</td>
+              </tr>
+              {% endfor %}
+              {% else %}
+              <tr>
+                <td colspan="4" class="table-empty-note">No books loaded yet.</td>
+              </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </article>
+      </section>
+      {% endif %}
+    </main>
+
+    <script>
+      (function () {
+        var root = document.documentElement;
+        var toggle = document.getElementById("theme-toggle");
+        var sun = document.getElementById("icon-sun");
+        var moon = document.getElementById("icon-moon");
+
+        if (!toggle || !root) return;
+
+        var stored = window.localStorage.getItem("kbd-theme");
+        if (stored === "light" || stored === "dark") {
+          root.setAttribute("data-theme", stored);
+        } else if (
+          window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: light)").matches
+        ) {
+          root.setAttribute("data-theme", "light");
+        }
+
+        function applyThemeUI() {
+          var mode = root.getAttribute("data-theme") || "dark";
+          if (mode === "light") {
+            toggle.setAttribute("aria-label", "Switch to dark mode");
+            toggle.setAttribute("title", "Switch to dark mode");
+            if (sun) sun.classList.add("active");
+            if (moon) moon.classList.remove("active");
+          } else {
+            toggle.setAttribute("aria-label", "Switch to light mode");
+            toggle.setAttribute("title", "Switch to light mode");
+            if (sun) sun.classList.remove("active");
+            if (moon) moon.classList.add("active");
+          }
+        }
+
+        applyThemeUI();
+
+        toggle.addEventListener("click", function () {
+          var current =
+            root.getAttribute("data-theme") === "light" ? "dark" : "light";
+          root.setAttribute("data-theme", current);
+          window.localStorage.setItem("kbd-theme", current);
+          applyThemeUI();
+        });
+      })();
+    </script>
+  </body>
+</html>

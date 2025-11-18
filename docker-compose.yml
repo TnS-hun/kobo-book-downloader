@@ -1,0 +1,25 @@
+services:
+  kobo-book-downloader:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: kobo-book-downloader
+    image: kobo-book-downloader:latest
+    restart: unless-stopped
+    ports:
+      # Web UI port (UI mode only)
+      - "${UI_PORT:-5000}:${UI_PORT:-5000}"
+    volumes:
+      # Configuration file
+      - ./config:/config
+      # Download directory
+      - ./downloads:/downloads
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=${TZ:-America/New_York}
+      - UI_ENABLED=${UI_ENABLED:-true}
+      - UI_PORT=${UI_PORT:-5000}
+      # Example: list all books (CLI-only)
+      - KBD_COMMAND=${KBD_COMMAND:-list --all}
+

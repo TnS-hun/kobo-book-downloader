@@ -1,2 +1,11 @@
 /.idea/
 /kobo-book-downloader/__pycache__/
+
+# Generic Python caches
+__pycache__/
+**/__pycache__/
+
+# Local configuration, env file, and downloaded books (contain secrets and large files)
+/.env
+/config/
+/downloads/
