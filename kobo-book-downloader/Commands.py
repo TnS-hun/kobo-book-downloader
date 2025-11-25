@@ -129,7 +129,10 @@ Examples:
 			if newEntitlement is None:
 				continue
 
-			bookMetadata = newEntitlement[ "BookMetadata" ]
+			bookMetadata = newEntitlement.get( "BookMetadata" )
+			if bookMetadata is None:
+				continue
+
 			fileName = Commands.__MakeFileNameForBook( bookMetadata )
 			outputFilePath = os.path.join( outputPath, fileName )
 
