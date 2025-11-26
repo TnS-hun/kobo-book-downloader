@@ -20,7 +20,6 @@ import urllib
 try:
 	import readline
 except ImportError:
-	# readline is not available on Windows, but it's only needed for MacOS input issues
 	pass
 
 class KoboException( Exception ):
