@@ -16,7 +16,11 @@ import urllib
 # It was not possible to enter the entire captcha response on MacOS.
 # Importing readline changes the implementation of input() and solves the issue.
 # See https://stackoverflow.com/q/65735885 and https://stackoverflow.com/q/7357007.
-import readline
+# readline is not available on Windows, so we import it conditionally.
+try:
+	import readline
+except ImportError:
+	pass
 
 class KoboException( Exception ):
 	pass
