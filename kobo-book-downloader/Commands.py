@@ -1,5 +1,5 @@
 from Globals import Globals
-from Kobo import DownloadUrlListEmptyKoboException, Kobo, KoboException
+from Kobo import Kobo, KoboException
 
 import colorama
 
@@ -105,11 +105,20 @@ Examples:
 
 	@staticmethod
 	def __DownloadBookWithLogging( revisionId: str, outputPath: str ) -> None:
+		# Skip books that have already been downloaded successfully, so that an interrupted --all run can be resumed.
+		if os.path.isfile( outputPath ):
+			problem = Kobo.CheckEpubFile( outputPath )
+			if problem is None:
+				print( colorama.Fore.LIGHTYELLOW_EX + f"Skipping '{outputPath}', it already exists and is a valid EPUB." + colorama.Fore.RESET )
+				return
+			print( colorama.Fore.LIGHTYELLOW_EX + f"Existing file '{outputPath}' is broken ({problem}), downloading it again." + colorama.Fore.RESET )
+
 		print( f"Downloading book to '{outputPath}'." )
 
 		try:
 			Globals.Kobo.Download( revisionId, Kobo.DisplayProfile, outputPath )
-		except DownloadUrlListEmptyKoboException as e:
+		except KoboException as e:
+			# Report the error and continue with the next book instead of aborting the whole batch.
 			message = f"ERROR: downloading book to '{outputPath}' has failed. {e}"
 			print( colorama.Style.BRIGHT + colorama.Fore.RED + message + colorama.Style.RESET_ALL )
 
