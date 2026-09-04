@@ -2,8 +2,10 @@ from Globals import Globals
 from Kobo import Kobo, KoboException
 
 import colorama
+import requests
 
 import os
+import time
 
 class Commands:
 	# It wasn't possible to format the main help message to my liking, so using a custom one.
@@ -115,12 +117,27 @@ Examples:
 
 		print( f"Downloading book to '{outputPath}'." )
 
-		try:
-			Globals.Kobo.Download( revisionId, Kobo.DisplayProfile, outputPath )
-		except KoboException as e:
-			# Report the error and continue with the next book instead of aborting the whole batch.
-			message = f"ERROR: downloading book to '{outputPath}' has failed. {e}"
-			print( colorama.Style.BRIGHT + colorama.Fore.RED + message + colorama.Style.RESET_ALL )
+		# Network errors (timeouts, connection resets) are usually transient, so retry a few times before giving up.
+		# KoboException is not retried, it means the request succeeded but the response itself is unusable.
+		maxAttempts = 3
+		for attempt in range( 1, maxAttempts + 1 ):
+			try:
+				Globals.Kobo.Download( revisionId, Kobo.DisplayProfile, outputPath )
+				return
+			except KoboException as e:
+				# Report the error and continue with the next book instead of aborting the whole batch.
+				message = f"ERROR: downloading book to '{outputPath}' has failed. {e}"
+				print( colorama.Style.BRIGHT + colorama.Fore.RED + message + colorama.Style.RESET_ALL )
+				return
+			except requests.exceptions.RequestException as e:
+				if attempt == maxAttempts:
+					message = f"ERROR: downloading book to '{outputPath}' has failed after {maxAttempts} attempts. {e}"
+					print( colorama.Style.BRIGHT + colorama.Fore.RED + message + colorama.Style.RESET_ALL )
+					return
+
+				message = f"WARNING: network error while downloading '{outputPath}' ({e}), retrying ({attempt}/{maxAttempts})..."
+				print( colorama.Fore.LIGHTYELLOW_EX + message + colorama.Fore.RESET )
+				time.sleep( 5 )
 
 	@staticmethod
 	def __GetBook( revisionId: str, outputPath: str ) -> None:
