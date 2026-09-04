@@ -3,7 +3,7 @@ from KoboDrmRemover import KoboDrmRemover
 
 import requests
 
-from typing import Dict, Tuple
+from typing import Dict, Optional, Tuple
 import base64
 import html
 import os
@@ -12,6 +12,7 @@ import secrets
 import string
 import time
 import urllib
+import zipfile
 
 # It was not possible to enter the entire captcha response on MacOS.
 # Importing readline changes the implementation of input() and solves the issue.
@@ -387,6 +388,24 @@ class Kobo:
 				return f"{size:.1f} {unit}" if unit != "B" else f"{size} {unit}"
 			size /= 1024
 
+	# Returns None if the file is a valid ZIP archive (an EPUB is a ZIP file) and all of its entries pass the CRC-32
+	# check, otherwise returns a description of the problem.
+	@staticmethod
+	def CheckEpubFile( path: str ) -> Optional[ str ]:
+		try:
+			with zipfile.ZipFile( path, "r" ) as zipFile:
+				badEntry = zipFile.testzip()
+				if badEntry is not None:
+					return f"CRC check failed for '{badEntry}' inside the archive"
+				if "META-INF/container.xml" not in zipFile.namelist():
+					return "META-INF/container.xml is missing, the file is not an EPUB"
+		except zipfile.BadZipFile as e:
+			return f"not a valid ZIP archive ({e})"
+		except OSError as e:
+			return str( e )
+
+		return None
+
 	def __DownloadToFile( self, url, outputPath: str ) -> None:
 		Globals.Logger.debug( "Kobo.__DownloadToFile" )
 
@@ -430,6 +449,11 @@ class Kobo:
 				os.remove( temporaryOutputPath )
 			else:
 				os.rename( temporaryOutputPath, outputPath )
+
+			# Verify the final file, a broken one is worse than a missing one.
+			problem = Kobo.CheckEpubFile( outputPath )
+			if problem is not None:
+				raise KoboException( f"The downloaded file is corrupt: {problem}." )
 		except:
 			if os.path.isfile( temporaryOutputPath ):
 				os.remove( temporaryOutputPath )
