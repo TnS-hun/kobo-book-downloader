@@ -380,14 +380,35 @@ class Kobo:
 
 		raise KoboException( message )
 
+	@staticmethod
+	def FormatFileSize( size: int ) -> str:
+		for unit in ( "B", "KiB", "MiB", "GiB" ):
+			if size < 1024 or unit == "GiB":
+				return f"{size:.1f} {unit}" if unit != "B" else f"{size} {unit}"
+			size /= 1024
+
 	def __DownloadToFile( self, url, outputPath: str ) -> None:
 		Globals.Logger.debug( "Kobo.__DownloadToFile" )
 
 		response = self.Session.get( url, stream = True )
 		response.raise_for_status()
+
+		expectedSize = None
+		contentLength = response.headers.get( "Content-Length" )
+		if contentLength is not None and contentLength.isdigit():
+			expectedSize = int( contentLength )
+			print( f"File size: {Kobo.FormatFileSize( expectedSize )}" )
+		else:
+			Globals.Logger.debug( "The server did not send the Content-Length header, the file size can't be verified." )
+
+		downloadedSize = 0
 		with open( outputPath, "wb" ) as f:
 			for chunk in response.iter_content( chunk_size = 1024 * 256 ):
 				f.write( chunk )
+				downloadedSize += len( chunk )
+
+		if expectedSize is not None and downloadedSize != expectedSize:
+			raise KoboException( "The downloaded file is incomplete: got %d bytes, expected %d bytes." % ( downloadedSize, expectedSize ) )
 
 	# Downloading archived books is not possible, the "content_access_book" API endpoint returns with empty ContentKeys
 	# and ContentUrls for them.
